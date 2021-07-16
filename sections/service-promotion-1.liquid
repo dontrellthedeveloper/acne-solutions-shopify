@@ -1,0 +1,167 @@
+{%- if section.settings.show_promo -%}
+<div style="margin: {{ section.settings.margin }};padding: {{ section.settings.padding }};background-color:{{ section.settings.back_color }};" class="position-relative">
+  {%- if section.settings.back_img != blank -%}
+    <div class="image-bg lazyload" data-bg="{{ section.settings.back_img | img_url: 'master'}}"></div>
+  {%- endif -%}
+  <div class="container position-relative">
+    {%- if section.settings.title != blank -%}
+      <h2 class="block-title">{{ section.settings.title }}</h2>
+    {%- endif -%}
+    {%- if section.settings.description != blank -%}
+      <p class="block-description">{{ section.settings.description }}</p>
+    {%- endif -%}
+    <div class="row">
+      {%- assign count = section.settings.row_size -%}
+      {%- for block in section.blocks -%}
+        <div class="large-{{ 12 | divided_by: count }} boxed {{ section.settings.box_style }}" {{block.shopify_attributes}}>
+          {% render 'promotion', promo_icon: block.settings.promo_icon, promo_title: block.settings.promo_title, promo_text: block.settings.promo_text %}
+        </div>
+      {%- endfor -%}
+    </div><!-- .row -->
+  </div><!-- .container.position-relative -->
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Service Promotion Type 1",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_promo",
+      "label": "Show Promotion Text",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "margin",
+      "label": "Section margin",
+      "info": "Set margin for section top-right-bottom-left (e.g. 20px 15px 10px 0)"
+    },
+    {
+      "type": "text",
+      "id": "padding",
+      "label": "Section padding",
+      "info": "Set padding for section (e.g. 20px 15px 10px 0)",
+      "default": "80px 0 80px 0"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Why Choose Us"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Section Description",
+      "default": "Aiquam auctor ut eros sed pharetra, at cursus consequat velit."
+    },
+    {
+      "type": "header",
+      "content": "Style Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "back_img",
+      "label": "Background Image",
+      "info": "1920 x 670 recommended"
+    },
+    {
+      "type": "color",
+      "id": "back_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "row_size",
+      "label": "Block count in one row",
+      "options": [
+        {"value": "1", "label": "1"},
+        {"value": "2", "label": "2"},
+        {"value": "3", "label": "3"},
+        {"value": "4", "label": "4"}
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "box_style",
+      "label": "Style",
+      "options": [
+        {"value": "classic", "label": "Classic"},
+        {"value": "advanced", "label": "Advanced"},
+        {"value": "modern", "label": "Modern"}
+      ],
+      "default": "classic"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "icon-text",
+      "name": "Icon and Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "promo_icon",
+          "label": "Icon Name"
+        },
+        {
+          "type": "text",
+          "id": "promo_title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "promo_text",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Service Promotion Type 1",
+    "category": "Text Section",
+    "blocks": [
+      {
+        "type": "icon-text",
+        "settings": {
+          "promo_icon": "icon-truck",
+          "promo_title": "Free Delivery",
+          "promo_text": "Cras pellentesque, nisi ac tempus pellentesqna"
+        }
+      },
+      {
+        "type": "icon-text",
+        "settings": {
+          "promo_icon": "icon-headset2",
+          "promo_title": "24/h support",
+          "promo_text": "Pellenteque habitant morbi senectus et netus et male"
+        }
+      },
+      {
+        "type": "icon-text",
+        "settings": {
+          "promo_icon": "icon-back-smooth-1",
+          "promo_title": "30 - Day returns",
+          "promo_text": "In nec erat elementum, et venenatis purus nec"
+        }
+      },
+      {
+        "type": "icon-text",
+        "settings": {
+          "promo_icon": "icon-lock-wide",
+          "promo_title": "payment secured",
+          "promo_text": "Mauris interdum nulla ante dignissim, vel malesuada"
+        }
+      }
+    ]
+  }]
+}
+{% endschema %}

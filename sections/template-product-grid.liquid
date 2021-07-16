@@ -1,0 +1,202 @@
+<div class="product-layout products-layout-grid container">
+  <div class="row space-between">
+    <div class="product-img-area {{ section.settings.img_position }}">
+      {% assign current_variant = product.selected_or_first_available_variant %}
+
+      <div class="row">
+        {%- for media in product.media -%}
+          <div class="grid-items__{{ section.settings.img_count }}" data-variants="{{ img_variants }}">
+            {% case media.media_type %}
+              {% when 'image' %}
+                <div class="product-img{% if target_index %} init-img{% endif %} image-loading" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+                  <img class="image-bg lazyload product-images" data-src="{{ media | img_url: '600x' }}" data-zoom="{{ media | img_url: 'master' }}" alt="{{ media.alt | default: product.title }}"/>
+                </div>
+              {% when 'external_video' %}
+                <div class="product-img media-container" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+                  {{ media | external_video_tag }}
+                  <div class="media-type-badge">{% render 'icon-media-video' %}</div>
+                </div>
+              {% when 'video' %}
+                <div class="product-img media-container" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+                  {{ media | video_tag: controls: true }}
+                  <div class="media-type-badge">{% render 'icon-media-video' %}</div>
+                </div>
+              {% when 'model' %}
+                <div class="product-img media-container" style="padding-top: 100%" data-media="{{ media.id }}">
+                  {{ media | model_viewer_tag: preload: true, reveal-when-loaded: true, auto-rotate: true, camera-controls: true }}
+                  <div class="media-type-badge">{% render 'icon-media-model' %}</div>
+                </div>
+            {% endcase %}
+          </div><!-- .grid-items__ -->
+        {%- endfor -%}
+      </div><!-- .row -->
+    </div><!-- .product-img-area -->
+
+    <div class="product-details-area position-relative sticky-dir-up">
+      {% render 'product_page_details', section: section %}
+    </div><!-- .product-details-area -->
+  </div><!-- .row.space-between -->
+
+  {%- if section.settings.badge_position == 'bottom-full' -%}
+    {%- if section.settings.badge_style == 'advanced' -%}
+      <div class="full-width">
+    {%- endif -%}
+    <div class="product-badges bottom-full {{ section.settings.badge_style }} container row">
+      {% render 'product_badge', blocks: section.blocks, style: section.settings.badge_style %}
+    </div><!-- .product-badges.bottom-full -->
+    {%- if section.settings.badge_style == 'advanced' -%}
+      </div><!-- .full-width -->
+    {%- endif -%}
+  {%- endif -%}
+</div><!-- .product-layout.products-layout-grid -->
+
+{% schema %}
+{
+  "name": "Main Information",
+  "class": "products-template",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Image"
+    },
+    {
+      "type": "select",
+      "id": "img_count",
+      "label": "Grid images number",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "img_position",
+      "label": "Product Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prev_next",
+      "label": "Enable Link to Prev/Next Products",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "label": "Show Product SKU",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendors",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_type",
+      "label": "Show product type",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buy_now",
+      "label": "Show dynamic checkout button",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "badge_style",
+      "label": "Product badge style",
+      "options": [
+        { "value": "classic", "label": "Classic" },
+        { "value": "advanced", "label": "Advanced" }
+      ],
+      "default": "classic"
+    },
+    {
+      "type": "select",
+      "id": "badge_position",
+      "label": "Product badge position",
+      "options": [
+        { "value": "bottom-full", "label": "Full width under product images" },
+        { "value": "side-fixed", "label": "In product information column" }
+      ],
+      "default": "bottom-full"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "icon_text",
+      "name": "Icon and Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "promo_icon",
+          "label": "Icon Name"
+        },
+        {
+          "type": "textarea",
+          "id": "promo_title",
+          "label": "Title"
+        }
+      ]
+    },
+    {
+      "type": "image_text",
+      "name": "Image and Text",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "badge_img",
+          "label": "Badge image",
+          "info": "Image size 50*50px recommended"
+        },
+        {
+          "type": "textarea",
+          "id": "promo_title",
+          "label": "Title"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-truck",
+          "promo_title": "Free Delivery"
+        }
+      },
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-headset2",
+          "promo_title": "24/h support"
+        }
+      },
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-back-smooth-1",
+          "promo_title": "30 - Day returns"
+        }
+      },
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-lock-wide",
+          "promo_title": "payment secured"
+        }
+      }
+    ]
+  }
+}
+{% endschema %}

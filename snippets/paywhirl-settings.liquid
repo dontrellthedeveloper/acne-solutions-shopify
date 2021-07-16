@@ -1,0 +1,11 @@
+<script defer>
+  window.paywhirl = window.paywhirl || {};
+
+  //set the selector for the single product price
+  //window.paywhirl.productPriceSale = '.product-single__price';
+
+  //Setup ajax cart support, set css selectors for ajax cart
+  window.paywhirl.ajaxCartContainer = '.ajaxcart-draw';
+  window.paywhirl.ajaxCartProductName = '.ajaxcart__product-name';
+</script>
+<script src="{{ 'paywhirl.js' | asset_url }}" defer></script>

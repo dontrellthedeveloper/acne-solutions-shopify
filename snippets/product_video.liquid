@@ -1,0 +1,35 @@
+{% comment %}
+Renders only product videos from product media
+  Accepts:
+    - media: <Media> product media
+
+  Usage:
+    {% render 'product_video', media: product.media %}
+{% endcomment %}
+
+<div class="product-videos">
+  <div class="row">
+    {%- assign has_video = false -%}
+    {%- for media in product.media -%}
+      {%- case media.media_type -%}
+        {%- when 'external_video' -%}
+          {%- assign has_video = true -%}
+          <div class="grid-items__2">
+            <div class="product-img media-container" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+              {{ media | external_video_tag }}
+            </div>
+          </div><!-- .grid-items__2 -->
+        {%- when 'video' -%}
+          {%- assign has_video = true -%}
+          <div class="grid-items__2">
+            <div class="product-img media-container" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+              {{ media | video_tag: controls: true }}
+            </div>
+          </div><!-- .grid-items__2 -->
+      {%- endcase -%}
+    {%- endfor -%}
+    {%- if has_video == false -%}
+      <p class="product-description">{{ 'products.product.no_video' | t }}</p>
+    {%- endif -%}
+  </div><!-- .row -->
+</div><!-- .product-videos -->

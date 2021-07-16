@@ -1,0 +1,149 @@
+{%- liquid
+assign insta_layout = section.settings.insta_layout
+assign section_title = section.settings.section_title
+assign c_title = section.settings.c_title
+assign c_desc = section.settings.c_desc
+assign hashtag = section.settings.hashtag
+-%}
+<div style="margin: {{ section.settings.margin }};">
+  <div class="{{ section.settings.layout }} text-center">
+
+    {%- if section_title != blank -%}
+      <h2 class="insta-title" style="color:{{ c_title }}">{{ section_title }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.section_info != blank -%}
+      <h3 class="insta-desc" style="color:{{ c_desc }}">{{ section.settings.section_info | newline_to_br }}</h3>
+    {%- endif -%}
+
+    {%- if insta_layout == 'carousel' or insta_layout == 'slide' -%}
+      <div class="instagram-images items-carousel {{ insta_layout }}{% if insta_layout == 'slide' %} fade{% endif %}"
+        data-hashtag="{{ hashtag }}"
+        data-count="{{ section.settings.count }}"
+        data-grid="{{ section.settings.grid_count }}"
+        data-layout="{{ insta_layout }}"></div>
+    {%- else -%}
+      <div class="instagram-images ds-flex {{ insta_layout }}"
+        data-hashtag="{{ hashtag }}"
+        data-count="{{ section.settings.count }}"
+        data-grid="{{ section.settings.grid_count }}"
+        data-layout="{{ insta_layout }}"></div>
+    {%- endif -%}
+
+    {%- if section.settings.btn_text != blank -%}
+      <a class="btn btn-default insta-link" href="{{ section.settings.insta_link }}">{{ section.settings.btn_text }}</a>
+    {%- endif -%}
+  </div><!-- .container.text-center -->
+</div>
+<style>
+</style>
+
+{% schema %}
+{
+  "name": "Instagram",
+  "tag": "section",
+  "class": "vs-instagram",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "margin",
+      "label": "Section Margin",
+      "info": "Set margin for section top-right-bottom-left (e.g. 20px 15px 10px 0)",
+      "default": "150px 0"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Section Layout",
+      "options": [
+        { "value": "container", "label": "Fixed Width" },
+        { "value": "full-width-container", "label": "Full Width" }
+      ],
+      "default": "container"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "#insta_venedor"
+    },
+    {
+      "type": "color",
+      "id": "c_title",
+      "label": "Title color",
+      "default": "#333333"
+    },
+    {
+      "type": "textarea",
+      "id": "section_info",
+      "label": "Section description",
+      "default": "Class aptent taciti sociosqu ad litora torquent."
+    },
+    {
+      "type": "color",
+      "id": "c_desc",
+      "label": "Description color",
+      "default": "#777777"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "JOIN OUR COMMUNITY"
+    },
+    {
+      "type": "url",
+      "id": "insta_link",
+      "label": "Link To"
+    },
+    {
+      "type": "header",
+      "content": "Instagram Settings"
+    },
+    {
+      "type": "select",
+      "id": "insta_layout",
+      "label": "Layout style",
+      "options": [
+        { "value": "carousel", "label": "Carousel" },
+        { "value": "masonry", "label": "Masonry Layout" },
+        { "value": "grid", "label": "Grid Layout" },
+        { "value": "slide", "label": "Slide" }
+      ],
+      "default": "carousel"
+    },
+    {
+      "type": "text",
+      "id": "hashtag",
+      "label": "Instagram hashtag",
+      "default": "#venedor_insta_orange"
+    },
+    {
+      "type": "range",
+      "id": "count",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "label": "Number of images to show",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "grid_count",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "label": "Number of images in a row",
+      "default": 5
+    }
+  ],
+  "presets": [{
+    "name": "Instagram",
+    "category": "Social"
+  }]
+}
+{% endschema %}

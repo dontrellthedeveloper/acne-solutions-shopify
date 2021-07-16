@@ -1,0 +1,219 @@
+{%- liquid
+assign section_title = section.settings.title
+assign layout = section.settings.layout
+assign auto_speed = section.settings.auto_speed
+assign show_dots = section.settings.show_dots
+assign show_nav = section.settings.show_nav
+assign nav_style = section.settings.nav_style
+assign cols = section.settings.cols
+-%}
+
+<div class="content-slideshow collections-carousel" style="margin: {{ section.settings.margin }};background-color: {{ section.settings.color_section_bg }};">
+  <div class="{{ nav_style }} {{ layout }}">
+    {%- if section_title != blank -%}
+      <h2 class="block-title">{{ section_title }}</h2>
+    {%- endif -%}
+
+    <div class="items-carousel {{ section.settings.text_style }}"
+      data-auto="{{ auto_speed }}"
+      data-dots="{{ show_dots }}"
+      data-nav="{{ show_nav }}"
+      data-wraparound="true"
+      data-cellalign="center"
+      data-groupCells="80%">
+      {%- for block in section.blocks -%}
+        {% render 'collection_carousel_card', block: block, cols: cols %}
+      {%- endfor -%}
+    </div><!-- .items-carousel -->
+  </div><!-- nav_style -->
+</div><!-- .content-slideshow.collections-carousel -->
+<style>
+#shopify-section-{{ section.id }} .flickity-page-dots .dot{color:{{ section.settings.c_dots }}}
+#shopify-section-{{ section.id }} .flickity-page-dots .dot:hover,#shopify-section-{{ section.id }} .flickity-page-dots .is-selected{color:{{ section.settings.c_dots_h | default: settings.c_theme }}}
+#shopify-section-{{ section.id }} .flickity-prev-next-button {border-color:{{ section.settings.c_nav_border }};background-color:{{ section.settings.c_nav_bg }};color:{{ section.settings.c_nav }}}
+#shopify-section-{{ section.id }} .collection-info{background-color:{{ section.settings.c_textbg }}}
+#shopify-section-{{ section.id }} .collection-name{color:{{ section.settings.c_title }}}
+#shopify-section-{{ section.id }} .collection-desc{color:{{ section.settings.c_desc }}}
+</style>
+
+{% schema %}
+{
+  "name": "Collections Carousel",
+  "tag": "section",
+  "class": "vs-initialize-slider",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "color",
+      "id": "color_section_bg",
+      "label": "Section background color",
+      "default": "#f4f6f7"
+    },
+    {
+      "type": "text",
+      "id": "margin",
+      "label": "Section Margin",
+      "info": "sequence: top-right-bottom-left (ex: 10px 0 10px 0)",
+      "default": "0 0 115px 0"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "container", "label": "Fixed Width" },
+        { "value": "full-width-container", "label": "Full Width" }
+      ],
+      "default": "full-width-container"
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section title",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "select",
+      "id": "text_style",
+      "label": "Text Style",
+      "options": [
+        { "value": "collection-text-classic", "label": "Classic" },
+        { "value": "collection-text-advanced", "label": "Advanced" },
+        { "value": "collection-text-bottom", "label": "Bottom left" }
+      ],
+      "default": "collection-text-classic"
+    },
+    {
+      "type": "text",
+      "id": "auto_speed",
+      "label": "Autoplay speed",
+      "info": "'5' for the slideshow to auto rotate every 5 seconds. '0' to disable auto rotate.",
+      "default": "5"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Pagination Dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show Navigation",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "nav_style",
+      "label": "Navigator position",
+      "options": [
+        { "value": "nav-top__right", "label": "Top right" },
+        { "value": "nav-top__center", "label": "Top Center" },
+        { "value": "nav-middle", "label": "Middle center" }
+      ],
+      "default": "nav-top__center"
+    },
+    {
+      "type": "range",
+      "id": "cols",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Number of items to show at once",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "c_textbg",
+      "label": "Text background",
+      "default": "#f9f7f6"
+    },
+    {
+      "type": "color",
+      "id": "c_title",
+      "label": "Title color",
+      "default": "#27272d"
+    },
+    {
+      "type": "color",
+      "id": "c_desc",
+      "label": "Description color",
+      "default": "#383636"
+    },
+    {
+      "type": "color",
+      "id": "c_dots",
+      "label": "Dots color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "c_dots_h",
+      "label": "Dots hover color"
+    },
+    {
+      "type": "color",
+      "id": "c_nav_bg",
+      "label": "Navigator background",
+      "default": "rgba(0,0,0,0)"
+    },
+    {
+      "type": "color",
+      "id": "c_nav_border",
+      "label": "Navigator border",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "c_nav",
+      "label": "Navigator color",
+      "default": "#333333"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "c_desc",
+          "label": "Description",
+          "default": "Save over $50.00 on"
+        }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Collections Carousel",
+    "category": "Collections",
+    "settings": {
+      "auto_speed": "5"
+    },
+    "blocks": [
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" }
+    ]
+  }]
+}
+{% endschema %}

@@ -1,0 +1,329 @@
+{%- liquid
+assign products_per_row = section.settings.products_per_row
+assign card_style = section.settings.card_style
+assign card_border = section.settings.card_border
+assign card_shadow = section.settings.card_shadow
+assign load_mode = section.settings.load_mode
+assign limit = section.settings.number_row | times: products_per_row
+-%}
+
+{% paginate collection.products by limit %}
+  <div class="collection-sort">
+    <div class="container">
+      <div class="row">
+        <div class="medium-9 col-padding ds-flex align-center flex-wrap">
+          {% render 'collection_template_sort' %}
+          {% render 'collection_template_grid_switcher' %}
+        </div>
+
+        {%- if paginate.pages > 1 and load_mode == 'default' -%}
+          <div class="medium-3 col-padding">
+              {% render 'pagination', paginate: paginate %}
+          </div>
+        {%- endif -%}
+      </div><!-- .row -->
+    </div><!-- .container -->
+  </div><!-- .collection-sort -->
+
+  <div class="container">
+    <div class="row">
+
+      <div class="large-{% if settings.collection_sidebar_pos != 'none' %}9{% else %}12{% endif %} col-padding grid" id="collectionsContent">
+        <div class="row {{ card_style }}">
+          {%- for product in collection.products -%}
+            <div class="grid-items__{{ products_per_row }} collection-card__wrapper">
+              {% render 'product_card', product: product, card_style: card_style, card_border: card_border, card_shadow: card_shadow, height: section.settings.height %}
+            </div>
+          {%- endfor -%}
+
+          {%- if load_mode == 'default' -%}
+            {%- if paginate.pages > 1 -%}
+            <div class="col-padding grid-items__1">
+              {% render 'pagination', paginate: paginate %}
+            </div>
+            {%- endif -%}
+          {%- elsif paginate.next.url != blank -%}
+            {%- if load_mode == 'scroll-load' -%}
+              <div id="infinite-more-link" data-target="{{ paginate.next.url }}">
+                {% render 'render_icon', icon_name: settings.anm_loading_products %}
+              </div>
+            {%- else -%}
+              <button class="btn btn-default load-more" data-target="{{ paginate.next.url }}"><span>{{ 'collections.general.load_more' | t }}</span>{% render 'render_icon', icon_name: settings.anm_loading_products %}</button>
+            {%- endif -%}
+          {%- endif -%}
+        </div><!-- .row -->
+
+        <div class="result-loading">{% render 'render_icon', icon_name: settings.anm_loading_products %}</div>
+      </div><!-- .large-9 / .large-12 -->
+
+      {%- if settings.collection_sidebar_pos != 'none' -%}
+        <div class="mobile-sidebar sticky-dir-up large-3 col-padding {{ settings.collection_sidebar_pos }}">
+
+          <div class="sidebar-block">
+            {% render 'collection_sidebar_navigation', sidebar_menu: section.settings.sidebar_menu %}
+          </div>
+
+          {%- for block in section.blocks -%}
+            <div class="sidebar-block" id="collection-block-{{ block.id }}" {{block.shopify_attributes}}>
+              {%- if block.type == 'filter_by_tags' -%}
+                {% render 'collection_sidebar_filter' with block %}
+              {%- elsif block.type == 'filter_by_price' -%}
+                {%- assign price_sort = collection.products | sort: 'price' -%}
+
+                {%- if block.settings.title != blank -%}
+                  <h3 class="block-title">{{ block.settings.title }}</h3>
+                {%- endif -%}
+                <input type="hidden" class="slider-input price-range" data-min="{{ price_sort[0].price | money }}" data-max="{{ price_sort[-1].price | money }}"/>
+
+              {%- else -%}
+                {%- assign advertise_img = block.settings.img -%}
+                {%- assign advertise_subtitle = block.settings.subtitle -%}
+                {%- assign advertise_title = block.settings.title -%}
+                {%- assign advertise_text_style = block.settings.advertise_text_style -%}
+                {%- assign advertise_thp = block.settings.advertise_thp -%}
+                {%- assign advertise_tvp = block.settings.advertise_tvp -%}
+                {%- assign advertise_color = block.settings.color -%}
+                {% render 'sidebar_advertise', img: advertise_img, subtitle: advertise_subtitle, block_title: advertise_title,
+                  style: advertise_text_style, color: advertise_color, thp: advertise_thp, tvp: advertise_tvp %}
+              {%- endif -%}
+            </div><!-- .sidebar-block -->
+          {%- endfor -%}
+        </div><!-- .mobile-sidebar.large-3 -->
+        <div class="mobile-sidebar-toggler">
+          {% render 'icon-dir-left' %}
+        </div><!-- .mobile-sidebar-toggler -->
+      {%- endif -%}
+
+    </div><!-- .row -->
+  </div><!-- .container -->
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "Collection Layout",
+  "tag": "section",
+  "class": "collection-layout",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Grid Layout Configuration"
+    },
+    {
+      "type": "select",
+      "id": "products_per_row",
+      "label": "Number of Products Per Row",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "number_row",
+      "label": "Number of Rows",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Product Card Style",
+      "options": [
+        { "value": "vertical-default", "label": "Vertical default" },
+        { "value": "vertical-advanced", "label": "Vertical advanced" },
+        { "value": "vertical-progressive", "label": "Vertical progressive" },
+        { "value": "vertical-classic", "label": "Vertical classic" },
+        { "value": "vertical-modern", "label": "Vertical modern" },
+        { "value": "horizontal-default", "label": "Horizontal default" },
+        { "value": "horizontal-advanced", "label": "Horizontal advanced" },
+        { "value": "horizontal-progressive", "label": "Horizontal progressive" },
+        { "value": "horizontal-classic", "label": "Horizontal classic" },
+        { "value": "horizontal-modern", "label": "Horizontal progressive" }
+      ],
+      "default": "vertical-default"
+    },
+    {
+      "type": "select",
+      "id": "card_img_height",
+      "label": "Image size",
+      "options": [
+        { "value": "relative", "label": "Relative to original size" },
+        { "value": "square", "label": "Square: aspect ratio 1:1" },
+        { "value": "rect", "label": "Rectangle: aspect ratio 10:13" }
+      ],
+      "default": "rect"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_border",
+      "label": "Show border around product cards",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Show box shadow around product cards",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "load_mode",
+      "label": "Products loading mode",
+      "options": [
+        { "value": "default", "label": "Use pagination" },
+        { "value": "scroll-load", "label": "Infinite scrolling" },
+        { "value": "button-load", "label": "Use load more button" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "Sidebar Configuration"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "filter_by_tags",
+      "name": "Filter by tags",
+      "settings": [
+        {
+          "type": "select",
+          "id": "type",
+          "label": "Block Type",
+          "options": [
+            { "value": "checkbox", "label": "Checkbox" },
+            { "value": "color", "label": "Color" }
+          ],
+          "default": "checkbox"
+        },
+        {
+          "type": "select",
+          "id": "tick_style",
+          "label": "Checkbox Type",
+          "options": [
+            { "value": "tick-rectangle", "label": "Rectangle" },
+            { "value": "tick-circle", "label": "Circle" }
+          ],
+          "default": "tick-rectangle"
+        },
+        { "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "brand"
+        },
+        {
+          "type": "textarea",
+          "id": "tags_list",
+          "label": "Tags",
+          "info": "Input tags separated with comma(,)",
+          "default": "Armani, Bulgari, Dolce & Gabbana, Cristian Dior, Givenchy"
+        }
+      ]
+    },
+    {
+      "type": "filter_by_price",
+      "name": "Filter by price",
+      "settings": [
+        { "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "price"
+        }
+      ]
+    },
+    {
+      "type": "advertise_image",
+      "name": "Image with Text",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "img",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Sub Title",
+          "default": "HUAWEI WATCH"
+        },
+        {
+          "type": "textarea",
+          "id": "title",
+          "label": "Text",
+          "default": "TIMELESS DESIGN"
+        },
+        {
+          "type": "select",
+          "id": "advertise_text_style",
+          "label": "Content style",
+          "options": [
+            { "value": "default", "label": "Green Style" },
+            { "value": "top-left", "label": "Blue Style" }
+          ],
+          "default": "top-left"
+        },
+        {
+          "type": "select",
+          "id": "advertise_thp",
+          "label": "Horizontal position of content",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "select",
+          "id": "advertise_tvp",
+          "label": "Vertical position of content",
+          "options": [
+            { "value": "v-top", "label": "Top" },
+            { "value": "v-center", "label": "Center" },
+            { "value": "v-bottom", "label": "Bottom" }
+          ],
+          "default": "v-center"
+        },
+        {
+          "type": "color",
+          "id": "color",
+          "label": "Advertisement Text Color",
+          "default": "#fff"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "filter_by_tags" },
+      {
+        "type": "filter_by_tags",
+        "settings": {
+          "type": "color",
+          "title": "color",
+          "tags_list": "#8bc24a, #4baf4f, #019587, #2095f2, #02a8f4, #2095f2,\n#3e50b4, #9b27b0, #ccdb38,\n#fdc006, #fd5621, #785446, \n#9d9d9d, #5f7c8a"
+        }
+      },
+      {
+        "type": "filter_by_tags",
+        "settings": {
+          "type": "checkbox",
+          "title": "storage size",
+          "tags_list": "16GB, 32GB, 64GB, 132GB"
+        }
+      },
+      { "type": "advertise_image" }
+    ]
+  }
+}
+{% endschema %}

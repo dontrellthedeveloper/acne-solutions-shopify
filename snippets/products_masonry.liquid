@@ -1,0 +1,66 @@
+{%- liquid
+assign block_title = products_masonry.settings.title
+assign description = products_masonry.settings.description
+assign c_collection = collections[products_masonry.settings.collection]
+assign rows = products_masonry.settings.rows
+assign cols = products_masonry.settings.cols
+assign num_limit = rows | times: cols | plus: 1
+assign main_pos = products_masonry.settings.main_pos
+assign main_style = products_masonry.settings.main_style
+assign card_style = products_masonry.settings.card_style
+assign card_border = products_masonry.settings.card_border
+assign card_shadow = products_masonry.settings.card_shadow
+-%}
+
+{%- if block_title != blank -%}
+  <h3 class="block-title">{{ block_title }}</h3>
+{%- endif -%}
+{%- if description != blank -%}
+  <p class="block-description">{{ description }}</p>
+{%- endif -%}
+
+<div class="products-masonry row {% if card_style contains 'vertical' %}vertical{% else %}horizontal{% endif %} cols-{{ cols }}">
+
+{%- unless c_collection == blank -%}
+  {%- for product in c_collection.products limit: num_limit -%}
+    {%- if forloop.first -%}
+      <div class="masonry-main item-1x {{ main_pos }} {{ main_style }}">
+        {% render 'product_card', product: product, card_style: main_style, card_border: card_border, card_shadow: card_shadow, img_max: 500 %}
+      </div>
+    {%- else -%}
+      {%- if forloop.index == 2 -%}
+        <div class="masonry-grid item-{{ cols }}x {{ card_style }}">
+          <div class="row">
+      {%- endif -%}
+      <div class="grid-items__{{ cols }}">
+        {% render 'product_card', product: product, card_style: card_style, card_border: card_border, card_shadow: card_shadow %}
+      </div>
+      {%- if forloop.last -%}
+          </div><!-- .row -->
+        </div><!-- .masonry-grid -->
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- else -%}
+  {%- for index in (1..num_limit) -%}
+    {% capture pp_index %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+    {%- if forloop.first -%}
+      <div class="masonry-main item-1x {{ main_pos }} {{ main_style }}">
+        {% render 'product_card', card_style: main_style, card_border: card_border, card_shadow: card_shadow, pp_index: pp_index %}
+      </div>
+    {%- else -%}
+      {%- if forloop.index == 2 -%}
+        <div class="masonry-grid item-{{ cols }}x {{ card_style }}">
+          <div class="row">
+      {%- endif -%}
+      <div class="grid-items__{{ cols }}">
+        {% render 'product_card', card_style: card_style, card_border: card_border, card_shadow: card_shadow, pp_index: pp_index %}
+      </div>
+      {%- if forloop.last -%}
+          </div><!-- .row -->
+        </div><!-- .masonry-grid -->
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endunless -%}
+</div>

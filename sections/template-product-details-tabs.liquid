@@ -1,0 +1,172 @@
+{%- if section.blocks.size > 0 -%}
+<div style="margin:{{ section.settings.margins }};">
+  <div class="container">
+    <div class="tabs ds-flex flex-column">
+      <ul class="tabs-nav list-style-none ds-flex flex-column">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'unique' and product.metafields.tab_unique.size < 1 -%}
+            {%- continue -%}
+          {%- endif -%}
+          <li class="tabs-nav__item{% if forloop.first %} active{% endif %} {{ block.type }}">
+            {%- case block.type -%}
+              {%- when 'description' -%}
+                <h4><a href="#tabs-content-{{ block.id }}">{{ 'products.product.description' | t }}</a></h4>
+
+              {%- when 'reviews' -%}
+                <h4><a href="#tabs-content-{{ block.id }}">{{ 'products.product.reviews' | t }}</a></h4>
+
+              {%- when 'unique' -%}
+                {%- assign outer_first = forloop.first -%}
+                {%- for tab in product.metafields.tab_unique -%}
+                  {%- if forloop.index > 1 -%}
+                    </li><li class="tabs-nav__item{% if outer_first %} active{% endif %} {{ block.type }}">
+                  {%- endif -%}
+                  {%- if tab != blank -%}
+                    <h4><a href="#tabs-content-{{ block.id }}{% unless forloop.index == 1 %}-{{ forloop.index }}{% endunless %}">{{ tab | first }}</a></h4>
+                  {%- endif -%}
+                {%- endfor -%}
+
+              {%- when 'product_video' -%}
+                <h4><a href="#tabs-content-{{ block.id }}">{{ 'products.product.product_video' | t }}</a></h4>
+
+              {%- when 'custom' -%}
+                <h4><a href="#tabs-content-{{ block.id }}">{{ block.settings.name }}</a></h4>
+            {%- endcase -%}
+          </li>
+        {%- endfor -%}
+        <li class="tabs-nav__item"></li>
+      </ul>
+      <div class="tabs-content">
+        {%- for block in section.blocks -%}
+          <div class="tabs-content__item{% if forloop.first %} active{% endif %}" id="tabs-content-{{ block.id }}" {{ block.shopify_attributes}}>
+            {%- case block.type -%}
+              {%- when 'description' -%}
+                {% render 'product_description', description: product.description %}
+
+              {%- when 'reviews' -%}
+                {%- if settings.review_app == 'shopify-app' -%}
+                  <div id="shopify-product-reviews" data-id="{{product.id}}" style="margin:0;">{{ product.metafields.spr.reviews }}</div>
+                {%- elsif settings.review_app == 'ali-reviews' -%}
+                  <div id="shopify-ali-review" product-id="{{ product.id }}"> {{ shop.metafields.review_collector.review_code }} </div>
+                {%- endif -%}
+
+              {%- when 'unique' -%}
+                {%- assign outer_first = forloop.first -%}
+                {%- for tab in product.metafields.tab_unique -%}
+                  {%- if forloop.index > 1 -%}
+                    </div><div class="tabs-content__item{% if outer_first %} active{% endif %}" id="tabs-content-{{ block.id }}-{{ forloop.index }}" {{ block.shopify_attributes}}>
+                  {%- endif -%}
+                  {%- if tab != blank -%}
+                    <div class="content-unique">{{ tab | last }}</div>
+                  {%- endif -%}
+                {%- endfor -%}
+
+              {%- when 'product_video' -%}
+                <style>.video-wrapper {margin-bottom: {{ block.settings.gap_videos }}px;}</style>
+                {% render 'product_video', media: product.media %}
+
+              {%- when 'custom' -%}
+                <p>{{ block.settings.content | newline_to_br }}</p>
+            {%- endcase -%}
+          </div><!-- .tabs-content__item -->
+        {%- endfor -%}
+      </div><!-- .tabs-content -->
+    </div><!-- .tabs.ds-flex -->
+  </div><!-- .container -->
+</div>
+<style>
+#shopify-section-{{ section.id }} .tabs-nav__item h4{color:{{ section.settings.c_tab }}}
+#shopify-section-{{ section.id }} .tabs-nav__item.active h4{color:{{ section.settings.c_active_tab }}}
+</style>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Details Tabs",
+  "class": "product-details-tabs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Details Tab"
+    },
+    {
+      "type": "text",
+      "id": "margins",
+      "label": "Section Margin",
+      "default": "120px 0 0 0"
+    },
+    {
+      "type": "color",
+      "id": "c_tab",
+      "label": "Tab title color",
+      "default": "#b5b5b5"
+    },
+    {
+      "type": "color",
+      "id": "c_active_tab",
+      "label": "Selected Tab title color",
+      "default": "#666666"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1
+    },
+    {
+      "type": "reviews",
+      "name": "Reviews",
+      "limit": 1
+    },
+    {
+      "type": "product_video",
+      "name": "Product Video",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "gap_videos",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "px",
+          "label": "Gap between videos",
+          "default": 18
+        }
+      ]
+    },
+    {
+      "type": "unique",
+      "name": "Unique Tab",
+      "limit": 1
+    },
+    {
+      "type": "custom",
+      "name": "Custom Tab",
+      "settings": [
+        {
+          "type": "text",
+          "label": "Tab name",
+          "id": "name",
+          "default": "Custom tab"
+        },
+        {
+          "type": "textarea",
+          "label": "Tab content",
+          "id": "content",
+          "default": "Write down your custom text here..."
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "description" },
+      { "type": "reviews" },
+      { "type": "product_video" },
+      { "type": "custom" }
+    ]
+  }
+}
+{% endschema %}

@@ -1,0 +1,58 @@
+{% comment %}
+Renders product in a grid style
+  Accepts:
+    - collection_carousel_card: <Collection> collection to show
+    - c_desc: <String> description of collection card
+    - cols: <Number> number of items to show at once
+
+  Usage:
+    {% render 'collection_carousel_card', block: block, cols: cols %}
+{% endcomment %}
+{%- liquid
+assign cc = collections[block.settings.collection]
+assign c_desc = block.settings.c_desc
+
+if cc != blank
+  assign ar = 1
+  assign c_title = cc.title
+
+  if cc.image
+    assign collection_image = cc.image
+  elsif cc.products.first and cc.products.first.images != empty
+    assign collection_image = cc.products.first.featured_image
+  else
+    assign collection_image = blank
+  endif
+
+  if collection_image != blank
+    assign ar = collection_image.aspect_ratio
+  endif
+
+  assign padding = 100 | divided_by: ar
+else
+  assign c_title = 'Showcase'
+  assign c_desc = "Assign me collection"
+  assign ar = '150'
+  assign padding = 150
+endif
+-%}
+<div class="collections-card collection-card__wrapper grid-items__{{ cols }}" {{ block.shopify_attributes }}>
+  <a href="{{ cc.url }}" class="ds-flex position-relative">
+    <div class="position-relative image-loading" style="width: 100%;padding-top:{{ padding }}%;">
+      {%- if collection_image != blank -%}
+      <div data-bg="{{ collection_image | img_url: '320x' }}" alt="" class="lazyload image-bg"></div>
+      {%- else -%}
+      <div class="image-bg">
+        {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+        {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder' }}
+      </div><!-- image-bg -->
+      {%- endif -%}
+    </div>
+    <div class="collection-info ds-flex flex-column justify-center">
+      {%- if c_desc != blank -%}
+        <h4 class="collection-desc">{{ c_desc }}</h3>
+      {%- endif -%}
+      <h3 class="collection-name">{{ cc.title }}</h3>
+    </div><!-- .collection-info -->
+  </a>
+</div><!-- .collections-card -->

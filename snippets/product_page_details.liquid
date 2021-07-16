@@ -1,0 +1,114 @@
+{% comment %}
+Renders product details block in product pages
+  Accepts:
+    - section: <Section> Parent section in which this snippet is rendered
+      = show_prev_next: <Boolean> show prev/next product buttons in same collection
+      = show_sku: <Boolean> show product sku
+      = show_vendor: <Boolean> show product vendor
+      = show_product_type: <Boolean> show product vendor
+      = show_buy_now: <Boolean> show buy_now button
+      = badge_position: <String> Position of badge (values: 'bottom-full', 'side-fixed')
+      = badge_style: <String> Product badge styles (values: 'Classic', 'Advanced')
+
+  Usage:
+    {% render 'product_page_details', section: section %}
+{% endcomment %}
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<h3 itemprop="name" class="product-name">{{ product.title }}</h3>
+
+{%- if section.settings.show_prev_next and collection -%}
+<div class="products-nav">
+  {%- if collection.previous_product -%}
+    <div class="product-item-container">
+      <a href="{{ collection.previous_product }}" title="Previous Product" class="product-prev">
+        {% render 'icon-dir-left' %}
+      </a>
+      <div class="product-popup image-loading">
+        <img class="lazyload" data-src="{{ collection.previous_product.featured_image | img_url: '100x'}}" alt="{{ collection.previous_product.title }}"/>
+        <h3 class="product-name">{{ collection.previous_product.title }}</h3>
+      </div>
+    </div><!-- .product-item-container -->
+  {%- else -%}
+    <span title="Previous Product" class="product-prev disabled">{% render 'icon-dir-left' %}</span>
+  {%- endif -%}
+  {%- if collection.next_product -%}
+    <div class="product-item-container">
+      <a href="{{ collection.next_product }}" title="Next Product" class="product-next">
+        {% render 'icon-dir-right' %}
+      </a>
+      <div class="product-popup image-loading">
+        <img class="lazyload" data-src="{{ collection.next_product.featured_image | img_url: '100x'}}" alt="{{ collection.next_product.title }}"/>
+        <h3 class="product-name">{{ collection.next_product.title }}</h3>
+      </div>
+    </div><!-- .product-item-container -->
+  {%- else -%}
+    <span title="Next Product" class="product-next disabled">{% render 'icon-dir-right' %}</span>
+  {%- endif -%}
+</div><!-- .product-nav -->
+{%- endif -%}
+
+<div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+  <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+  <meta itemprop="url" content="{{ product.url }}" />
+  <meta itemprop="itemCondition" itemtype="http://schema.org/OfferItemCondition" content="http://schema.org/NewCondition"/>
+  <meta itemprop="seller" content="{{ shop.name | escape }}" />
+
+  {% render 'product_price', price: product.price, compare_at_price: product.compare_at_price %}
+
+  {%- if settings.review_app == 'shopify-app' -%}
+    <div class="product-review">
+      <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+    </div>
+  {%- elsif settings.review_app == 'ali-reviews' -%}
+    <div class="product-review">
+      <div product-id="{{ product.id }}" class="alr-display-review-badge"></div>
+    </div>
+  {%- endif -%}
+
+  {%- if settings.enable_product_availability -%}
+  <link itemprop="availability" href="http://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}">
+  <div class="product-details__text">
+    <span>{{ 'products.product.availability' | t }}: </span>
+    <span class="in-stock">
+      {%- if product.selected_or_first_available_variant.inventory_management -%}
+        {%- assign inventory = product.selected_or_first_available_variant.inventory_quantity -%}
+        {%- if inventory > 0 -%}
+          {{inventory}} {{ 'products.product.in_stock' | t }}
+        {%- else -%}
+          {{ 'products.product.out_of_stock' | t }}
+        {%- endif -%}
+      {%- else -%}
+        {{ 'products.product.many_in_stock' | t }}
+      {%- endif -%}
+    </span>
+  </div><!-- .inventory -->
+  {%- endif -%}
+
+  {%- if section.settings.show_product_type and product.type != blank -%}
+    <div class="product-details__text"><span itemprop="brand">{{ 'products.product.type' | t }}:</span><span> {{ product.type }}</span></div>
+  {%- endif -%}
+
+  {%- if section.settings.show_sku and current_variant.sku != blank -%}
+  <div class="product-sku"><span>{{ 'products.product.sku' | t }}: </span><span itemprop="sku" class="sku">{{ current_variant.sku }}</span></div>
+  {%- endif -%}
+
+  {% if section.settings.show_vendor %}
+  <div class="product-vendor">
+    <span>{{ 'products.product.vendor' | t }}:</span><span itemprop="brand" class="brand"> {{ product.vendor }}</span>
+  </div>
+  {% endif %}
+
+  {%- if product.metafields.vndbasic['dealtime'] != blank -%}
+    {% render 'product_deal' with product.metafields.vndbasic['dealtime'] %}
+  {% endif %}
+  {% render 'product_form', show_buy_now: section.settings.show_buy_now, product: product %}
+
+  {% render 'product_share' %}
+
+  {%- if section.settings.badge_position == 'side-fixed' -%}
+  <div class="product-badges side-fixed row">
+    {% render 'product_badge', blocks: section.blocks, style: section.settings.badge_style %}
+  </div>
+  {%- endif -%}
+</div>

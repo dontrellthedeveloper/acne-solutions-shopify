@@ -1,0 +1,170 @@
+{%- if page.content != blank and section.settings.pos_page_content == 'top' -%}
+  <div class="container position-relative">
+    <p class="page-description">{{ page.content }}</p>
+  </div>
+{%- endif -%}
+
+<div class="compare-wrapper container">
+  <p class="page-description page-list__empty">{{ 'customer.compare.empty' | t }}</p>
+
+  <div class="compare-grid">
+    {% paginate collections.all.products by 9999 %}
+      <div class="compare-row ds-flex">
+        <div class="tb-heading">
+          <span class="ds-block">{{ 'general.search.predictive.products' | t }}</span>
+        </div>
+        {% for product in collections.all.products %}
+          <div data-product-handle="{{ product.handle }}" class="compare-card position-relative">
+            <a href="#" data-product-handle="{{ product.handle }}" class="btn-compare ds-block">{% render 'icon-close' %}</a>
+            <div class="product-img position-relative" style="padding-top:{{ 100 | divided_by: product.featured_image.aspect_ratio }}%;">
+              <a href="{{ product.url | within: collection }}" class="image-loading">
+                <img class="image-bg lazyload" data-src="{{ product.featured_image | img_url: '500x' }}"/>
+              </a>
+            </div>
+
+            <a href="{{ product.url | within: collection }}"><span class="ds-block">{{ product.title }}</span></a>
+            {% render 'product_price', price: product.price, compare_at_price: product.compare_at_price %}
+            {% render 'product_advanced_actions', product: product %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="compare-row ds-flex">
+        <div class="tb-heading">
+          <span>{{ 'products.product.description' | t }}</span>
+        </div>
+
+        {% for product in collections.all.products %}
+          <div data-product-handle="{{ product.handle }}" class="compare-card compare-desc">
+            {% render 'product_description', description: product.description, quickview: true %}
+          </div>
+        {% endfor %}
+      </div>
+
+      {%- if settings.enable_product_availability -%}
+      <div class="compare-row ds-flex">
+        <div class="tb-heading">
+          <span>{{ 'products.product.availability' | t }}</span>
+        </div>
+
+        {% for product in collections.all.products %}
+          <div data-product-handle="{{ product.handle }}" class="compare-card">
+            <span class="in-stock">
+              {%- if product.selected_or_first_available_variant.inventory_management -%}
+                {%- assign inventory = product.selected_or_first_available_variant.inventory_quantity -%}
+                {%- if inventory > 0 -%}
+                  {{inventory}} {{ 'products.product.in_stock' | t }}
+                {%- else -%}
+                  {{ 'products.product.out_of_stock' | t }}
+                {%- endif -%}
+              {%- else -%}
+                {{ 'products.product.many_in_stock' | t }}
+              {%- endif -%}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {%- if settings.review_app != 'none' -%}
+        <div class="compare-row ds-flex">
+          <div class="tb-heading">
+            <span>{{ 'products.product.reviews' | t }}</span>
+          </div>
+
+          {% for product in collections.all.products %}
+            <div data-product-handle="{{ product.handle }}" class="compare-card">
+              {%- if settings.review_app == 'shopify-app' -%}
+                <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+              {%- elsif settings.review_app == 'ali-reviews' -%}
+                <div product-id="{{ product.id }}" class="alr-display-review-badge"></div>
+              {%- endif -%}
+            </div>
+          {% endfor %}
+        </div>
+      {%- endif -%}
+
+
+      {%- if section.settings.show_product_type -%}
+        <div class="compare-row ds-flex">
+          <div class="tb-heading">
+            <span>{{ 'products.product.type' | t }}</span>
+          </div>
+
+          {% for product in collections.all.products %}
+            <div data-product-handle="{{ product.handle }}" class="compare-card">
+              <span> {{ product.type }}</span></div>
+            </div>
+          {% endfor %}
+        </div>
+      {%- endif -%}
+
+      {% if section.settings.show_vendor %}
+        <div class="compare-row ds-flex">
+          <div class="tb-heading">
+            <span>{{ 'products.product.vendor' | t }}</span>
+          </div>
+
+          {% for product in collections.all.products %}
+            <div data-product-handle="{{ product.handle }}" class="compare-card">
+              <span itemprop="brand" class="brand"> {{ product.vendor }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {%- endif -%}
+    {% endpaginate %}
+  </div>
+  <a href="/collections/all" class="btn btn-default browse-more">{{ 'cart.general.continue_shopping' | t }}</a>
+  <!-- Loader -->
+  <div class="result-loading">{% render 'render_icon', icon_name: settings.anm_loading_products %}</div>
+</div>
+
+{%- if page.content != blank and section.settings.pos_page_content == 'bottom' -%}
+  <div class="container position-relative">
+    <p class="page-description">{{ page.content }}</p>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Compare list",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Grid Layout Configuration"
+    },
+    {
+      "type": "select",
+      "id": "pos_page_content",
+      "label": "Page content position",
+      "options": [
+        { "value": "bottom", "label": "After grid" },
+        { "value": "top", "label": "After page title" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_continue",
+      "label": "Show continue shopping button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product Configuration"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Image size",
+      "options": [
+        { "value": "relative", "label": "Relative to original size" },
+        { "value": "square", "label": "Square: aspect ratio 1:1" },
+        { "value": "rect", "label": "Rectangle: aspect ratio 10:13" }
+      ],
+      "default": "rect"
+    }
+  ]
+}
+{% endschema %}

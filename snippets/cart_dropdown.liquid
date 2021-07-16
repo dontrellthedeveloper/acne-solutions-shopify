@@ -1,0 +1,85 @@
+{% comment %}
+Renders breadcrumb in every pages except index, login, register and password
+  Accepts:
+    - cart_style: <String> header cart item style (values: "show_amount", "show_abs_amount", "only_icon")
+    - amount_pos: <String> header cart amount position (values: "right", "left")
+
+  Usage:
+    {% render 'cart_dropdown', cart_style: section.settings.header_cart_style, amount_pos: section.settings.amount_pos %}
+{% endcomment %}
+
+{%- if cart_style == 'only_icon' -%}
+  <a href="/cart" style="color: #3f3f3f;" class="icon-cart cart-amount__{{ amount_pos }}" data-no-instant>
+    <div class="position-relative cart-amount__{{ amount_pos }}">
+      {% render 'render_icon', icon_name: settings.cart_icon %}
+      <span class="icon-cart__total">{{ cart.item_count }}</span>
+    </div>
+{%- elsif cart_style == 'show_abs_amount' -%}
+  <a href="/cart" style="color: #3f3f3f;" class="icon-cart cart-amount__{{ amount_pos }}" data-no-instant>
+    <div class="position-relative cart-amount__{{ amount_pos }}">
+      {% render 'render_icon', icon_name: settings.cart_icon %}
+      <span class="icon-cart__total">{{ cart.item_count }}</span>
+    </div>
+    <span class="icon-cart__count"><span>{{ 'cart.general.bag' | t }} : </span><span class="money">{% render 'format_money' with cart.total_price %}</span></span>
+{%- else -%}
+  <a href="/cart" style="color: #3f3f3f;" class="icon-cart" data-no-instant>
+    {% render 'render_icon', icon_name: settings.cart_icon %}<span class="icon-cart__count"><span class="cart-total">{{ cart.item_count }}</span> <span>{{ 'layout.cart.items_count' | t: count: cart.item_count }} - </span><span class="money">{% render 'format_money' with cart.total_price %}</span></span>
+  {%- endif -%}
+</a>
+<div class="cart-dropdown {{ settings.cart_effect }}">
+  {%- if cart.items != empty -%}
+    <span class="cart-count"><span class="cart-total">{{ cart.item_count }}</span> {{ 'layout.cart.items_count' | t: count: cart.item_count }} {{ 'cart.general.in_cart' | t }}</span>
+
+    <ul class="items-list ds-flex flex-column list-style-none">
+      {%- for line_item in cart.items -%}
+        <li class="cart-item ds-flex space-between position-relative">
+          <a href="{{ line_item.url }}" class="cart-item-image image-loading">
+            <img class="lazyload lazypreload" data-src="{{ line_item | img_url: '100x' }}" alt="{{ line_item.title | escape }}" />
+          </a>
+          <div class="cart-item-details">
+            <p class="product-name">
+              <a href="{{ line_item.url }}">
+                <span>{{ line_item.product.title }}</span>
+                {%- if line_item.product.variants.size > 1 -%}
+                  <span class="variant_title"> - {{ line_item.variant.title }}</span>
+                {%- endif -%}
+              </a>
+            </p>
+            <p class="product-quantity">
+              {{- line_item.quantity -}} <span style="font-size: 1.2rem;"> x </span><span class="product-price"><span class="current-price money">{% render 'format_money' with line_item.final_price %}</span></span>
+            <p>
+          </div><!-- .cart-item-details -->
+          <a href="{{routes.cart_change_url}}?id={{ item.key }}&amp;quantity=0" class="btn-remove-cart" data-id="{{ line_item.variant_id }}" title="{{ 'cart.general.remove' | t }}" data-no-instant>{% render 'icon-close' %}</a>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <div class="cart-checkout ds-flex">
+      <div class="cart-info">
+        <div>
+          <span class="label">{{ 'cart.label.original_price' | t }} : </span>
+          <span class="product-price"><span class="money">{% render 'format_money' with cart.original_total_price %}</span></span>
+        </div>
+        <div>
+          <span class="label">{{ 'cart.label.discounted_price' | t }} : </span>
+          <span class="product-price"><span class="money">{% render 'format_money' with cart.total_discount %}</span></span>
+        </div>
+        <div>
+          <span class="label">{{ 'cart.label.total' | t }} : </span>
+          <span class="product-price"><span class="current-price money">{% render 'format_money' with cart.total_price %}</span></span>
+        </div>
+      </div><!-- .cart-info -->
+
+      <div class="ml-auto text-right">
+        <a href="/cart" class="btn btn-default" data-no-instant>
+          <span>{{ 'cart.general.view_cart' | t }}</span>
+        </a>
+        <a href="/checkout" class="btn btn-default">
+          <span>{{ 'cart.general.checkout' | t }}</span>
+        </a>
+      </div><!-- .text-center -->
+    </div><!-- .cart-checkout -->
+  {%- else -%}
+    <span class="cart-count text-center">{{ 'cart.general.empty' | t }}</span>
+  {%- endif -%}
+</div><!-- .cart-cropdown -->

@@ -1,0 +1,118 @@
+<div class="page-width section-hura-video">
+<video autoplay muted loop playsinline class="hurabg-video">
+<source src="{{ section.settings.cm_video_link }}" type="video/mp4">
+</video>
+</div>
+
+
+{% schema %}
+{
+"name": {
+"da": "Custom Video",
+"de": "Custom Video",
+"en": "Custom Video",
+"es": "Custom Video",
+"fi": "Custom Video",
+"fr": "Vidéo",
+"hi": "वीडियो",
+"it": "Video",
+"ja": "動画",
+"ko": "동영상",
+"nb": "Video",
+"nl": "Video",
+"pt-BR": "Vídeo",
+"pt-PT": "Vídeo",
+"sv": "Video",
+"th": "วิดีโอ",
+"zh-CN": "视频",
+"zh-TW": "影片"
+},
+"class": "index-section video-section",
+"settings": [
+{
+"type": "text",
+"id": "cm_video_link",
+"label": {
+"da": "Overskrift",
+"de": "Überschrift",
+"en": "Video Link",
+"es": "Título",
+"fi": "Otsake",
+"fr": "En-tête",
+"hi": "शीर्षक",
+"it": "Custom Video",
+"ja": "見出し",
+"ko": "제목",
+"nb": "Overskrift",
+"nl": "Kop",
+"pt-BR": "Título",
+"pt-PT": "Título",
+"sv": "Rubrik",
+"th": "ส่วนหัว",
+"zh-CN": "标题",
+"zh-TW": "標題"
+}
+}
+],
+"presets": [
+{
+"name": {
+"da": "Custom Video",
+"de": "Custom Video",
+"en": "Custom Video",
+"es": "Custom Video",
+"fi": "Custom Video",
+"fr": "Custom Video",
+"hi": "वीडियो",
+"it": "Video",
+"ja": "動画",
+"ko": "동영상",
+"nb": "Video",
+"nl": "Video",
+"pt-BR": "Vídeo",
+"pt-PT": "Vídeo",
+"sv": "Video",
+"th": "วิดีโอ",
+"zh-CN": "视频",
+"zh-TW": "影片"
+},
+"category": {
+"da": "Video",
+"de": "Video",
+"en": "Video",
+"es": "Video",
+"fi": "Video",
+"fr": "Vidéo",
+"hi": "वीडियो",
+"it": "Video",
+"ja": "動画",
+"ko": "동영상",
+"nb": "Video",
+"nl": "Video",
+"pt-BR": "Vídeo",
+"pt-PT": "Vídeo",
+"sv": "Video",
+"th": "วิดีโอ",
+"zh-CN": "视频",
+"zh-TW": "影片"
+}
+}
+]
+}
+{% endschema %}
+
+{% stylesheet %}
+.section-hura-video{
+width:100%;
+}
+.hurabg-video{
+right: 0;
+bottom: 0;
+width: 100%;
+height: auto;
+}
+{% endstylesheet %}
+{% javascript %}
+{% endjavascript %}
+
+

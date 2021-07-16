@@ -1,0 +1,133 @@
+{%- liquid
+if product.compare_at_price > product.price
+  assign sale = true
+else
+  assign sale = false
+endif
+assign product_desc = product.description
+assign available = product.available
+assign a_p = 100 | divided_by: product.featured_image.aspect_ratio
+-%}
+
+{%- if a_p == padding -%}
+{%- capture img -%}
+<img class="link-entire lazyload product-first-image" data-src="{{ product.featured_image | img_url: img_max_width }}" alt="{{ product.title }}"/>
+{%- if product.images[1] != blank and settings.product_other_img != blank -%}
+<img class="link-entire lazyload product-second-image" data-src="{{ product.images[1].src | img_url: img_max_width }}" alt="{{ product.title }}"/>
+{%- endif -%}
+{%- endcapture -%}
+{%- else -%}
+{%- capture img -%}
+<div class="image-bg contain-bg lazyload product-first-image" data-bg="{{ product.featured_image | img_url: img_max_width }}" title="{{ product.title }}"></div>
+{%- if product.images[1] != blank and settings.product_other_img != blank -%}
+<div class="image-bg contain-bg lazyload product-second-image" data-bg="{{ product.images[1].src | img_url: img_max_width }}" title="{{ product.title }}"></div>
+{%- endif -%}
+{%- endcapture -%}
+{%- endif -%}
+
+<div class="product-img">
+  {%- if product.featured_image == blank -%}
+    <div class="main-product" style="padding-top:{{ padding }}%;">
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder' }}
+      <a href="{{ product.url | within: collection }}" class="link-entire"></a>
+    </div><!-- .main-product -->
+  {%- else -%}
+    <div class="main-product image-loading" style="padding-top:{{ padding }}%;">
+      {{ img }}
+      <a href="{{ product.url | within: collection }}" class="link-entire"></a>
+    </div><!-- .main-product -->
+  {%- endif -%}
+
+  {%- if product.metafields.vndbasic['dealtime'] != blank -%}
+    {% render 'product_deal' with product.metafields.vndbasic['dealtime'] %}
+  {% endif %}
+  {% render 'product_default_actions', product_url: product.url, available: product.available, variants: product.variants, handle: product.handle %}
+</div><!-- .product-img -->
+
+<div class="product-detail">
+  {%- if settings.enable_product_type and product.type != blank -%}
+    <h4 class="product-type">{{ product.type }}</h4>
+  {%- endif -%}
+
+  {%- unless settings.show_name_after_price -%}
+    <h3 class="product-name">
+      <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
+    </h3>
+
+    {% render 'product_description', description: product_desc, quickview: true %}
+  {%- endunless -%}
+
+  {% render 'product_price', price: product.price, compare_at_price: product.compare_at_price %}
+
+  {%- if settings.show_card_swatches -%}
+    {%- for option in product.options -%}
+      {%- assign option_name = option | downcase -%}
+      {%- if option_name contains 'colour' or option_name contains 'color' -%}
+        {%- assign index = forloop.index0 -%}
+        {%- assign colorlist = '' -%}
+        {%- assign color = '' -%}
+        <ul class="swatch-group ds-flex flex-wrap">
+          {%- for variant in product.variants -%}
+            {%- assign color = variant.options[index] | downcase -%}
+            {%- unless colorlist contains color -%}
+              {%- capture style -%}background-color:{{ color }}{%- endcapture -%}
+              {%- if settings.color_swatch_style == 'swatch_img' -%}
+                {%- assign swatch_url = color | append: '.png' | file_img_url: '32x' -%}
+                {%- capture style -%}background-color:{{ color }};background-image:url({{ swatch_url }}){%- endcapture -%}
+              {%- endif -%}
+              <li>
+                {%- if variant.image.src != blank -%}
+                  <a href="#" class="color-swatch ds-flex{% if forloop.first == true %} active{% endif %}" data-image="{{ variant.image.src | img_url: '400x' }}" data-price="{{ variant.price | money }}"><i style="{{ style }}"></i></a>
+                {%- else -%}
+                  <a href="#" class="color-swatch ds-flex{% if forloop.first == true %} active{% endif %}" data-price="{{ variant.price | money }}"><i style="{{ style }}"></i></a>
+                {%- endif -%}
+              </li>
+              {%- capture tempList %}{{ colorlist }} {{ color }}{% endcapture %}
+              {%- assign colorlist = tempList -%}
+            {%- endunless -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  {%- if settings.show_name_after_price -%}
+    <h3 class="product-name">
+      <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
+    </h3>
+    {% render 'product_description', description: product_desc, quickview: true %}
+  {%- endif -%}
+
+  {%- if settings.review_app == 'shopify-app' -%}
+    <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+  {%- elsif settings.review_app == 'ali-reviews' -%}
+    <div product-id="{{ product.id }}" class="alr-display-review-badge"></div>
+  {%- endif -%}
+</div><!-- .product-details -->
+
+<div class="product-label">
+{%- if sale -%}
+  {%- if settings.price_sale_style == 'text' -%}
+    <span class="product-label__sale">{{ 'products.product.on_sale' | t }}</span>
+  {%- else -%}
+    <span class="product-label__sale">-{{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | floor }}%</span>
+  {%- endif -%}
+{%- endif -%}
+
+{%- unless product.available -%}
+  <span class="product-label__sold">{{ 'products.product.sold_out' | t }}</span>
+{%- else -%}
+  {%- if product.has_only_default_variant and product.first_available_variant.inventory_quantity < 1 and product.first_available_variant.inventory_management -%}
+    <span class="product-label__sold">{{ 'products.product.sold_out' | t }}</span>
+  {%- endif -%}
+{%- endunless -%}
+</div><!-- .product-label -->
+
+{%- if settings.vertical_card_wishlist -%}
+<div class="vertical-card__right-top">
+  <div class="btn-wishlist" data-product-handle="{{ product.handle }}">
+    {% render 'icon-heart-empty' %}
+    {% render 'icon-heart' %}
+  </div>
+</div>
+{%- endif -%}

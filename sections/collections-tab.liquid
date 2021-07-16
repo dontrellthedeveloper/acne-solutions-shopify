@@ -1,0 +1,141 @@
+<div class="message-phone-css-vs-collection-tab" style="margin: {{ section.settings.margin }};">
+  <div class="container {{ section.settings.subtitle_style }}">
+    {% render 'collections_tab' with section, c_type: "section" %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collections Tab",
+  "class": "vs-collections-tab",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "margin",
+      "label": "Section margin",
+      "info": "Set margin for section top-right-bottom-left (e.g. 20px 15px 10px 0)",
+      "default": "0 0 180px 0"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section title",
+      "default": "latest products"
+    },
+    {
+      "type": "select",
+      "id": "subtitle_style",
+      "label": "Tab title style",
+      "options": [
+        { "value": "default", "label": "Small" },
+        { "value": "center-big", "label": "Big" },
+        { "value": "center-icon", "label": "With icon" },
+        { "value": "tab-title_bigger", "label": "Bigger" }
+      ],
+      "default": "center-big"
+    },
+    {
+      "type": "select",
+      "id": "tab_title_align",
+      "label": "Tab title font style",
+      "options": [
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-start", "label": "Left" }
+      ],
+      "default": "justify-center"
+    },
+    {
+      "type": "select",
+      "id": "tab_title_style",
+      "label": "Tab title font style",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "italic", "label": "Italic" }
+      ],
+      "default": "italic"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Product card style",
+      "options": [
+        { "value": "vertical-default", "label": "Vertical default" },
+        { "value": "vertical-classic", "label": "Vertical classic" },
+        { "value": "vertical-advanced", "label": "Vertical advanced" },
+        { "value": "vertical-progressive", "label": "Vertical progressive" },
+        { "value": "vertical-modern", "label": "Vertical modern" },
+        { "value": "horizontal-default", "label": "Horizontal default" },
+        { "value": "horizontal-advanced", "label": "Horizontal advanced" },
+        { "value": "horizontal-progressive", "label": "Horizontal progressive" }
+      ],
+      "default": "vertical-default"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_border",
+      "label": "Show border around product cards",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Show boxshadow around product cards",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "cols",
+      "label": "Number of columns",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Number of products to show",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 10
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Collection Icon",
+          "default": "icon-face"
+        }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Collections Tab",
+    "category": "Collections",
+    "blocks": [
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" },
+      { "type": "collection" }
+    ]
+  }]
+}
+{% endschema %}

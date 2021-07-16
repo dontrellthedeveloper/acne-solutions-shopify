@@ -1,0 +1,115 @@
+{% comment %}
+Renders product add cart form
+  Accepts:
+    - show_buy_now: <Boolean> show buy now button when this value is true
+
+  Usage:
+    {% render 'product_form', show_buy_now: section.settings.show_buy_now %}
+{% endcomment %}
+
+{% form 'product', product, class: 'product-form', novalidate: 'novalidate', id: form.id %}
+  {%- unless product.has_only_default_variant -%}
+    <div class="product-options">
+      {%- for option in product.options_with_values -%}
+        {% assign d_name = option.name | downcase %}
+        {% assign r_name = option.name | remove: '[size]' | remove: '[color]' %}
+        {% if settings.product_option_style == 'swatch' %}
+          <div class="product-single-option ds-flex align-center flex-wrap" data-option-index="{{ option.position }}" >
+            {% if d_name != 'default' %}
+              <span>{{ r_name }}</span>
+            {% endif %}
+
+            {% if d_name contains 'colour' or d_name contains 'color' %}
+              {% for value in option.values %}
+                {% assign safeValue = value | replace: '"', '&quot;' %}
+                {% assign downValue = value | safeValue %}
+                {%- capture style -%}background-color:{{ downValue }}{%- endcapture -%}
+                {%- if settings.color_swatch_style == 'swatch_img' -%}
+                  {%- assign swatch_url = safeValue | append: '.png' | file_img_url: '32x' -%}
+                  {%- capture style -%}{{ style }};background-image:url({{ swatch_url }}){%- endcapture -%}
+                {%- endif -%}
+                <label data-value="{{ safeValue }}" class="option-label option-color{% if option.selected_value == value %} active{% endif %}{% if downValue == 'white' or downValue == '#fff' or downValue == '#ffffff'%} option-label-white{% endif %}"
+                  style="{{ style }}">
+                  <span class="ticksign">{% render 'icon-ticksign' %}</span>
+                </label>
+              {% endfor %}
+            {% else %}
+              {% for value in option.values %}
+                {% assign safeValue = value | replace: '"', '&quot;' %}
+                <label data-value="{{ safeValue }}" class="option-label{% if option.selected_value == value %} active{% endif %}">{{ value }}</label>
+              {% endfor %}
+            {% endif %}
+
+            {% if d_name contains '[size]' %}
+              {%- if product.metafields.tab_size_guide.size_chart != blank -%}
+                <div class="size-chart">
+                  <a class="btn btn-text link-page-popup" href="/pages/{{ product.metafields.tab_size_guide.size_chart }}">{{ 'products.product.size_chart' | t }}</a>
+                </div>
+              {%- elsif settings.show_global_sizechart and settings.global_sizechart != blank -%}
+                <div class="size-chart">
+                  <a class="btn btn-text link-page-popup" href="/pages/{{ settings.global_sizechart }}">{{ 'products.product.size_chart' | t }}</a>
+                </div>
+              {%- endif -%}
+            {% endif %}
+
+          </div><!-- .product-single-option -->
+        {%- else -%}
+          <div class="product-single-option">
+            {% if r_name != 'default' %}
+              <label class="option-selector-name" for="{{ r_name | escape }}">{{ r_name }}</label>
+            {% endif %}
+
+            <select id="{{ r_name | escape }}" name="{{ r_name | escape }}" class="option-selector" data-option-index="{{ option.position }}">
+              {% for value in option.values %}
+                {% assign safeValue = value | replace: '"', '&quot;' %}
+                <option value="{{ safeValue }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+              {% endfor %}
+            </select>
+          </div><!-- .product-single-option -->
+        {%- endif -%}
+      {%- endfor -%}
+    </div><!-- .product-options -->
+  {%- endunless -%}
+
+  <select id="product-actual-select" name="id" style="display: none;">
+    {% for variant in product.variants %}
+      {% if variant.available %}
+        <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-policy="{{ variant.inventory_policy}}" data-inventory-management="{{ variant.inventory_management}}" data-quantity="{{ variant.inventory_quantity }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money_with_currency }}</option>
+      {% else %}
+        <option disabled="disabled">
+          {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+        </option>
+      {% endif %}
+    {% endfor %}
+  </select>
+
+  <div class="add-to-cart ds-flex flex-wrap">
+    <div class="qty-control position-relative">
+      <input type="number" name="quantity" value="1" min="1" class="quantity text-center">
+      <div class="reduce text-center">-</div>
+      <div class="increase text-center">+</div>
+    </div><!-- .qty-control -->
+    <div class="product-actions">
+      {% if product.available %}
+        <button type="submit" name="add" class="btn btn-default btn-add-cart btn-anm-cart"><span class="add-cart__text">{{ 'products.product.add_to_cart' | t }}</span><span class="spinner"></span></button>
+      {% else %}
+        <a href="javascript:;" class="btn btn-default btn-add-cart"><span class="add-cart__text">{{ 'products.product.sold_out' | t }}</span></a>
+      {% endif %}
+    </div><!-- .product-actions -->
+    {%- if settings.enable_wishlist -%}
+      <div class="btn btn-default btn-wishlist" style="display: none;" title="Add to Wishlist" data-product-handle="{{ product.handle }}">{% render 'render_icon', icon_name: settings.wishlist_icon %}</div>
+    {%- endif -%}
+    {%- if settings.enable_compare -%}
+      <div class="btn btn-default btn-compare" title="Add to Compare" data-product-handle="{{ product.handle }}">{% render 'render_icon', icon_name: settings.compare_icon %}</div>
+    {%- endif -%}
+  </div><!-- .add-to-cart -->
+
+  {%- if show_buy_now and product.available -%}
+    {{ form | payment_button }}
+  {%- endif -%}
+{% endform %}
+
+
+<script type="application/json" data-product-json>
+  {{ product | json }}
+</script>

@@ -1,0 +1,35 @@
+<div role="banner" class="header header-type-2">
+  <div class="ds-flex align-center flex-wrap">
+    {% render 'logo' with section.settings.logo, logo_m: section.settings.logo_mobile, logo_type: section.settings.logo_type,
+      logo_svg: section.settings.logo_svg %}
+
+    <div class="ds-flex ml-auto">
+      {% render 'promotion', promo_icon: section.settings.promo_icon1, promo_title: section.settings.promo_title1, promo_text: section.settings.promo_text1 %}
+      {% render 'promotion', promo_icon: section.settings.promo_icon2, promo_title: section.settings.promo_title2, promo_text: section.settings.promo_text2 %}
+    </div><!-- .ds-flex.ml-auto -->
+
+    {%- for block in section.blocks -%}
+      {% render 'topbar_item', item: block %}
+    {%- endfor -%}
+
+    <button class="mobile-btn">
+      <span class="mobile-btn__line"></span>
+      <span class="mobile-btn__line"></span>
+      <span class="mobile-btn__line"></span>
+    </button>
+  </div><!-- .ds-flex.align-center.flex-wrap -->
+
+  <div class="full-width full-width-menu">
+    <div class="container">
+      {% render 'header_menu', a_c: section.settings.header_menu_center %}
+    </div>
+  </div><!-- .full-width.full-width-menu -->
+  <div class="header-menu__shadow full-width"></div>
+</div><!-- .header-type-2 -->
+
+<style>
+.header-menu__shadow{background:transparent url({{ 'container_shadow.png' | asset_url}}) 50% 0 no-repeat;}
+.sticky-active .promo-container,.sticky-active .header-menu__shadow{display: none;}
+.sticky-active .search-form {display:flex;display:-ms-flexbox;margin-left: auto;}
+@media (min-width: 992px) {.sticky-active .full-width-menu{display: none}}
+</style>

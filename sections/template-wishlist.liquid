@@ -1,0 +1,87 @@
+{%- if page.content != blank and section.settings.pos_page_content == 'top' -%}
+  <div class="container page-wishlist position-relative">
+    <p class="page-description">{{ page.content }}</p>
+  </div>
+{%- endif -%}
+
+<div class="container page-wishlist position-relative">
+  <p class="page-description page-list__empty">{{ 'customer.wishlist.empty' | t }}</p>
+  <div class="row wishlist-grid vertical-default">
+    {% paginate collections.all.products by 9999 %}
+      {% for product in collections.all.products %}
+        <div class="grid-items__{{ section.settings.per_row }} col-padding wishlist-card" data-product-handle="{{ product.handle }}">
+          {% render 'product_card_wishlist', product: product, height: section.settings.height %}
+        </div>
+      {% endfor %}
+    {% endpaginate %}
+  </div>
+
+  <!-- Loader -->
+  <div class="result-loading active">{% render 'render_icon', icon_name: settings.anm_loading_products %}</div>
+  {%- if section.settings.show_continue -%}
+    <a href="/collections/all" class="btn btn-default browse-more">{{ 'cart.general.continue_shopping' | t }}</a>
+  {%- endif -%}
+</div>
+
+{%- if page.content != blank and section.settings.pos_page_content == 'bottom' -%}
+  <div class="container page-wishlist position-relative">
+    <p class="page-description">{{ page.content }}</p>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Wishlist Section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Grid Layout Configuration"
+    },
+    {
+      "type": "select",
+      "id": "per_row",
+      "label": "Number of Products Per Row",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "pos_page_content",
+      "label": "Page content position",
+      "options": [
+        { "value": "bottom", "label": "After grid" },
+        { "value": "top", "label": "After page title" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_continue",
+      "label": "Show continue shopping button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product Configuration"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Image size",
+      "options": [
+        { "value": "relative", "label": "Relative to original size" },
+        { "value": "square", "label": "Square: aspect ratio 1:1" },
+        { "value": "rect", "label": "Rectangle: aspect ratio 10:13" }
+      ],
+      "default": "rect"
+    }
+  ]
+}
+{% endschema %}

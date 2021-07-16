@@ -1,0 +1,51 @@
+{% comment %}
+Renders Login link in topbar or header section
+  Accepts:
+    - link_title: Button title
+
+  Usage:
+    {% render 'header_account_dropdown', link_title: link_title %}
+{% endcomment %}
+
+{%- if settings.enable_login_popup -%}
+  <a href="#account-popup" class="popup-activator ds-flex align-center" data-no-instant>{{ link_title }}</a>
+  <div class="popup-box account-box" id="account-popup">
+    {%- if shop.customer_accounts_enabled -%}
+      {%- if customer -%}
+        <li class="menu-item">
+          <a href="/account/logout" class="menu-item-link" data-no-instant>{{ 'customer.logout.title' | t }}</a>
+        </li>
+        <li class="menu-item">
+          <a href="/account" class="menu-item-link" data-no-instant>{{ 'customer.account.title' | t }}</a>
+        </li>
+      {%- else -%}
+        {% form 'customer_login' %}
+          <h3 class="popup-title">{{ 'customer.login.title' | t }}</h3>
+
+          {{ form.errors | default_errors }}
+
+          <label class="form-label" for="customer_email">{{ 'customer.login.email' | t }}</label>
+          <div class="position-relative">
+            <input class="form-input" type="email" name="customer[email]" />
+          </div>
+
+          <label class="form-label" for="customer_password">{{ 'customer.login.password' | t }}</label>
+          <div class="position-relative">
+            <input class="form-input" type="password" name="customer[password]" />
+          </div>
+
+          <input type="hidden" name="checkout_url" id="login_redirect" value="" />
+
+          <input class="btn btn-default" type="submit" value="{{ 'customer.login.sign_in' | t }}" />
+        {% endform %}
+
+        <div class="text-center other-links">
+          {{ 'customer.register.title' | t | customer_register_link }}
+          <a href="/account/login#recover" data-no-instant>{{ 'customer.login.forgot_password' | t }}</a>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div><!-- .popup-box.account-box -->
+{%- else -%}
+  <a href="/account/login" class="ds-flex" data-no-instant>{{ link_title }}</a>
+{%- endif -%}

@@ -1,0 +1,239 @@
+{%- assign gap_thumbs = section.settings.gap_thumbs | divided_by: 2 | append: 'px' -%}
+
+<div class="container product-layout product-layout-default">
+  <div class="product-main row space-between">
+    <div class="product-img-area {{ section.settings.img_position }} {{ section.settings.thumbs_pos }}" style="margin-left:-{{ gap_thumbs }};margin-right:-{{ gap_thumbs }}">
+      {% assign current_variant = product.selected_or_first_available_variant %}
+      <div class="items-carousel"
+        style="padding-left:{{ gap_thumbs }};padding-right:{{ gap_thumbs }}">
+        {%- for media in product.media -%}
+          {% case media.media_type %}
+            {% when 'image' %}
+              <div class="product-img{% if target_index %} init-img{% endif %}" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+                {%- capture a_attr -%}data-zoom="{{ media | img_url: 'master' }}" itemprop="image"{%- endcapture -%}
+                {%- capture image_alt -%}{{ media.alt | default: product.title }}{%- endcapture -%}
+                {% render 'image', m_img: media, image_alt: image_alt, a_attr: a_attr, add_class: 'product-images', element_type: 'image' %}
+              </div>
+            {% when 'external_video' %}
+              <div class="product-img media-container" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+                {{ media | external_video_tag }}
+              </div>
+            {% when 'video' %}
+              <div class="product-img media-container" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%" data-media="{{ media.id }}">
+                {{ media | video_tag: controls: true }}
+              </div>
+            {% when 'model' %}
+              <div class="product-img media-container" style="padding-top: 100%" data-media="{{ media.id }}">
+                {{ media | model_viewer_tag: preload: true, reveal-when-loaded: true, auto-rotate: true, camera-controls: true }}
+              </div>
+          {% endcase %}
+        {%- endfor -%}
+      </div><!-- .items-carousel -->
+
+      {%- if product.media.size > 1 -%}
+        <div class="thumbs-viewport position-relative" style="padding-left:{{ gap_thumbs }};padding-right:{{ gap_thumbs }}">
+          <div class="thumbs-container position-relative">
+            {% for media in product.media %}
+              <div class="product-thumb">
+                {%- if media.media_type == 'model' -%}
+                  <div class="product-thumb__link position-relative image-loading" href="#" style="padding-top:100%">
+                    <div class="media-type-badge">{% render 'icon-media-model' %}</div>
+                {%- else -%}
+                  <div class="product-thumb__link position-relative image-loading" href="#" style="padding-top:{{ 100 | divided_by: media.aspect_ratio }}%">
+                  {%- if media.media_type == 'video' -%}
+                    <div class="media-type-badge">{% render 'icon-media-video' %}</div>
+                  {%- endif -%}
+                {%- endif -%}
+                  <img class="image-bg lazyload" data-src="{{ media | img_url: '110x', scale: 2 }}" alt="{{ media.alt | default: product.title }}"/>
+                </div>
+              </div>
+            {% endfor %}
+          </div><!-- .thumbs-container -->
+          <div class="thumb-arrow__up">
+            {% render 'icon-dir-up' %}
+          </div><!-- .thumb-arrow__up -->
+          <div class="thumb-arrow__down">
+            {% render 'icon-dir-down' %}
+          </div><!-- .thumb-arrow__down-->
+        </div><!-- .thumbs-viewport.position-relative -->
+      {%- endif -%}
+    </div>
+
+    <div class="product-details-area position-relative">
+      {% render 'product_page_details', section: section %}
+    </div>
+      
+
+  </div>
+
+  {%- if section.settings.badge_position == 'bottom-full' -%}
+    {%- if section.settings.badge_style == 'advanced' -%}
+      <div class="full-width">
+    {%- endif -%}
+    <div class="product-badges bottom-full {{ section.settings.badge_style }} container row">
+      {% render 'product_badge', blocks: section.blocks, style: section.settings.badge_style %}
+    </div>
+    {%- if section.settings.badge_style == 'advanced' -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Main Information",
+  "class": "products-template",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Image"
+    },
+    {
+      "type": "select",
+      "id": "img_position",
+      "label": "Product image position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "thumbs_pos",
+      "label": "Slider thumbnails position",
+      "options": [
+        { "value": "thumbs-left", "label": "Left" },
+        { "value": "thumbs-right", "label": "Right" },
+        { "value": "thumbs-bottom", "label": "Bottom" }
+      ],
+      "default": "thumbs-left"
+    },
+    {
+      "type": "range",
+      "id": "gap_thumbs",
+      "min": 0,
+      "max": 50,
+      "label": "Space between product image and thumbnails",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prev_next",
+      "label": "Enable Link to Prev/Next Products",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "label": "Show Product SKU",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendors",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_type",
+      "label": "Show product type",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buy_now",
+      "label": "Show dynamic checkout button",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "badge_style",
+      "label": "Product badge style",
+      "options": [
+        { "value": "classic", "label": "Classic" },
+        { "value": "advanced", "label": "Advanced" }
+      ],
+      "default": "classic"
+    },
+    {
+      "type": "select",
+      "id": "badge_position",
+      "label": "Product badge position",
+      "options": [
+        { "value": "bottom-full", "label": "Full width under product images" },
+        { "value": "side-fixed", "label": "In product information column" }
+      ],
+      "default": "bottom-full"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "icon_text",
+      "name": "Icon and Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "promo_icon",
+          "label": "Icon Name"
+        },
+        {
+          "type": "textarea",
+          "id": "promo_title",
+          "label": "Title"
+        }
+      ]
+    },
+    {
+      "type": "image_text",
+      "name": "Image and Text",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "badge_img",
+          "label": "Badge image",
+          "info": "Image size 50*50px recommended"
+        },
+        {
+          "type": "textarea",
+          "id": "promo_title",
+          "label": "Title"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-truck",
+          "promo_title": "Free Delivery"
+        }
+      },
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-headset2",
+          "promo_title": "24/h support"
+        }
+      },
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-back-smooth-1",
+          "promo_title": "30 - Day returns"
+        }
+      },
+      {
+        "type": "icon_text",
+        "settings": {
+          "promo_icon": "icon-lock-wide",
+          "promo_title": "payment secured"
+        }
+      }
+    ]
+  }
+}
+{% endschema %}

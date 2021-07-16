@@ -1,0 +1,174 @@
+{% comment %}
+Renders topbar items regarding to their type
+  Accepts:
+    - item: <Block> item to show
+
+  Usage:
+    {% render 'topbar_item', item: block %}
+{% endcomment %}
+{%- if item.settings.icon != blank and item.settings.title != blank -%}
+  {%- assign hs = ' has-space' -%}
+{%- else -%}
+  {%- assign hs = '' -%}
+{%- endif -%}
+
+{%- case item.type -%}
+{%- when 'login' -%}
+{%- if shop.customer_accounts_enabled -%}
+<div class="topbar-item{{ hs }}" id="block-{{ item.id }}" {{ item.shopify_attributes }}>
+{%- if customer -%}
+  <a href="/account/logout" style="letter-spacing: 1.5px;" class="ds-flex" data-no-instant>{{ 'customer.logout.title' | t }}</a>
+</div>
+<div class="topbar-item">
+  <a href="/account" style="letter-spacing: 1.5px;" class="ds-flex" data-no-instant>{{ 'customer.account.title' | t }}</a>
+{%- else -%}
+  {%- capture login_title -%}{% render 'render_icon', icon_name: item.settings.icon %}{{ item.settings.text }}{%- endcapture -%}
+  {% render 'header_account_dropdown', link_title: login_title %}
+<style>#block-{{ item.id }} svg {width:{{ item.settings.size_icon }}px}</style>
+{%- endif -%}
+</div><!-- .topbar-item -->
+{%- endif -%}
+
+
+{%- when 'currency' -%}
+{%- if settings.show_multiple_currencies -%}
+<div class="topbar-item dropdown-items{{ hs }}">
+  {%- assign codes = 'USD,EUR,GBP,CAD,ARS,AUD,BBD,BDT,BSD,BHD,BRL,BOB,BND,BGN,ILS,MMK,KYD,CLP,CNY,COP,CRC,HRK,CZK,DKK,DOP,XCD,EGP,XPF,FJD,GHS,GTQ,GYD,GEL,HKD,HUF,ISK,INR,IDR,NIS,JMD,JPY,JOD,KZT,KES,KWD,LVL,LTL,MXN,MYR,MUR,MDL,MAD,MNT,MZN,ANG,NZD,NGN,NOK,OMR,PKR,PYG,PEN,PHP,PLN,QAR,RON,RUB,SAR,RSD,SCR,SGD,SYP,ZAR,KRW,LKR,SEK,CHF,TWD,THB,TZS,TTD,TRY,UAH,AED,UYU,VEB,VND,ZMK' | split: ',' -%}
+  {%- assign supported_codes = settings.supported_currencies | split: ' ' -%}
+  <a href="#" class="selected-currency ds-flex align-center">
+    <span class="flag-name ds-flex align-center">{% if item.settings.show_flags %}<span class="currency-flag currency-flag-{{ shop.currency | downcase }}"></span>{% endif %}{{ shop.currency }}</span>{% render 'icon-dir-down' %}
+  </a>
+
+  <ul class="dropdown-items__picker currency-picker text-center" name="currencies">
+    {%- for code in supported_codes -%}
+      {%- if codes contains code -%}
+        <li value="{{ code }}">
+          <a href="#" class="currency-item" data-currency="{{ code }}">{% if item.settings.show_flags %}<span class="currency-flag currency-flag-{{ code | downcase }}"></span>{% endif %}{{ code }}</a>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+</div><!-- .topbar-item -->
+{%- endif -%}
+
+
+{%- when 'cart' -%}
+<style>
+#block-{{ item.id }} .icon-cart {background-color: {{ item.settings.cart_bg }}; color: {{ item.settings.cart_color }};}
+#block-{{ item.id }} .icon-cart svg {fill:{{ item.settings.cart_icon }};width:{{ item.settings.size_icon }}px}
+.vs-topbar #block-{{ item.id }}.cart-wrapper:hover .icon-cart{color:#ffffff;}
+.vs-topbar #block-{{ item.id }}.cart-wrapper:hover .icon-cart svg{fill:#ffffff;}
+#block-{{ item.id }} .icon-cart__total{background-color:{{item.settings.c_amount_bg}};color:{{item.settings.c_amount_text}}}
+</style>
+<div class="topbar-item cart-wrapper{{ hs }}" id="block-{{ item.id }}">
+  {% render 'cart_dropdown', cart_style: item.settings.header_cart_style, amount_pos: item.settings.amount_pos %}
+</div><!-- .topbar-item -->
+
+
+{%- when 'language' -%}
+<div class="topbar-item dropdown-items language-wrapper">
+  {%- if item.settings.lang_type == 'lang-external' and linklists[item.settings.lang_menu] != blank -%}
+    {%- assign links = linklists[item.settings.lang_menu].links -%}
+    {%- assign current_link = links | where: "current", true | first -%}
+    {%- if current_link == blank -%}
+      {%- assign current_link = links.first -%}
+    {% else %}
+      {{ current_link.last.title }}
+    {%- endif -%}
+    <a href="{{ current_link.url }}" class="ds-flex align-center">{{ current_link.title }}{% render 'icon-dir-down' %}</a>
+
+    <ul class="dropdown-items__picker">
+      {%- for link in links -%}
+        {%- unless link == current_link -%}
+          <li class="dropdown-item">
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          </li>
+        {%- endunless -%}
+      {%- endfor -%}
+    </ul>
+  {%- elsif item.settings.lang_type == 'weglot-theme' -%}
+<style>
+.weglot-container{display:none}
+.wg-drop.country-selector ul{display:none}
+.wg-drop.country-selector.closed .wgcurrent::after,.wg-drop.country-selector .wgcurrent::after{content:none !important}
+.wg-flags.flag-1 a::before{-webkit-transform:scale(.5);transform:scale(.5);margin-right:0}
+.wg-drop.country-selector a{height:39px;padding:0 2.5rem 0 2.5rem !important;color:inherit;line-height: 39px}
+.wg-drop.country-selector .wgcurrent{border:0}
+.wg-drop.country-selector{background-color:transparent}
+.wg-drop.country-selector:not(.closed) .wg-li.focus a, .wg-drop.country-selector:not(.closed) a:hover{color:inherit}
+.wg-drop.country-selector:not(.closed) ul {border:0;background-color:#f4f4f4}
+@media all and (max-width: 992px) {.wg-drop.country-selector a{height:31px;padding:0 1.2rem 0 1.2rem !important;line-height: 31px}}
+</style>
+  {%- endif -%}
+</div><!-- .topbar-item -->
+
+
+{%- when 'html' -%}
+<div class="topbar-item"><span>{{ item.settings.title }}</span></div>
+
+
+{%- when 'search_box' -%}
+<div class="topbar-item hover-bg-none{{ hs }}" id="block-{{ item.id }}">{% render 'search_form', search_style: item.settings.search_style, search_icon: item.settings.search_icon %}</div>
+<style>
+@media(min-width: 992px) {
+#block-{{ item.id }} .header-search .header-search__button,
+{%- if item.settings.search_btn_border != blank -%}
+#block-{{ item.id }} .header-search .header-search__input{border-width:{{item.settings.search_btn_border}}px;}
+{%- endif -%}
+#block-{{ item.id }} .header-search__button{color:{{item.settings.color_search}}}
+#block-{{ item.id }} .header-search__button:hover{color:{{item.settings.color_search_h}}}
+#block-{{ item.id }} .header-search__input{border-color:{{item.settings.color_search_ib}};color:{{item.settings.color_search_input}}}}
+#block-{{ item.id }} .header-search .header-search__button svg {width:{{ item.settings.size_icon }}px}
+</style>
+
+
+{%- when 'wishlist' -%}
+<div class="topbar-item {{ item.settings.item_count_pos }}{{ hs }}" id="block-{{ item.id }}" {{ item.shopify_attributes }}>
+  {%- if item.settings.item_count_pos == 'item-count__default' -%}
+    <a href="{{ settings.wishlist_link }}" class="ds-flex align-center">{% render 'render_icon', icon_name: item.settings.icon %}{{ item.settings.title }}(<span class="wishlist-count">0</span>)</a>
+  {%- else -%}
+    <a href="{{ settings.wishlist_link }}" class="ds-flex align-center"><div class="position-relative">{% render 'render_icon', icon_name: item.settings.icon %}<span class="wishlist-count">0</span></div>{{ item.settings.title }}</a>
+  {%- endif -%}
+</div><!-- .topbar-item -->
+<style>#block-{{ item.id }} svg {width:{{ item.settings.size_icon }}px}</style>
+
+{%- when 'compare' -%}
+<div class="topbar-item {{ item.settings.item_count_pos }}{{ hs }}" id="block-{{ item.id }}" {{ item.shopify_attributes }}>
+  {%- if item.settings.item_count_pos == 'item-count__default' -%}
+    <a href="{{ settings.compare_link }}" class="ds-flex align-center">{% render 'render_icon', icon_name: item.settings.icon %}{{ item.settings.title }}(<span class="compare-count">0</span>)</a>
+  {%- else -%}
+    <a href="{{ settings.compare_link }}" class="ds-flex align-center"><div class="ds-flex position-relative">{% render 'render_icon', icon_name: item.settings.icon %}<span class="compare-count">0</span></div>{{ item.settings.title }}</a>
+  {%- endif -%}
+</div><!-- .topbar-item -->
+<style>#block-{{ item.id }} svg {width:{{ item.settings.size_icon }}px}</style>
+
+{%- when 'checkout' -%}
+<div class="topbar-item{{ hs }}" id="block-{{ item.id }}" {{ item.shopify_attributes }}>
+  <a href="/checkout" class="ds-flex align-center">{% render 'render_icon', icon_name: item.settings.icon %}{{ item.settings.title }}</a>
+</div><!-- .topbar-item -->
+<style>#block-{{ item.id }} svg {width:{{ item.settings.size_icon }}px}</style>
+
+
+{%- when 'dropdown' -%}
+<div class="topbar-item dropdown-items{{ hs }}" id="block-{{ item.id }}" {{ item.shopify_attributes }}>
+  <a href="{{ item.settings.title_link }}" class="ds-flex align-center">{{ item.settings.title }}{% render 'icon-dir-down' %}</a>
+  {%- if item.settings.types != blank -%}
+    {%- assign types = item.settings.types | strip_newlines | strip | replace: ', ', ',' | replace: ' ,', ',' | split: ',' -%}
+    <ul class="dropdown-items__picker text-center" name="brands">
+      {%- for type in types -%}
+        <li class="dropdown-item{% if collection.current_type == type %} is-selected{% endif %}">{{ type | link_to_type }}</li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div><!-- .topbar-item -->
+<style>#block-{{ item.id }} svg {width:{{ item.settings.size_icon }}px}</style>
+
+
+{%- else -%}
+{%- if item.settings.title != blank or item.settings.icon != blank -%}
+<div class="topbar-item{{ hs }}" id="block-{{ item.id }}" {{ item.shopify_attributes }}>
+  <a href="{{item.settings.button_link}}" class="ds-flex align-center">{% render 'render_icon', icon_name: item.settings.icon %}{{ item.settings.title }}</a>
+</div><!-- .topbar-item -->
+<style>#block-{{ item.id }} svg {width:{{ item.settings.size_icon }}px}</style>
+{%- endif -%}
+{%- endcase -%}

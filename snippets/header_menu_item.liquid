@@ -1,0 +1,26 @@
+{% comment %}
+Renders header menu item with tooltips
+  Accepts:
+    - blocks: <Object> menu style objects
+    - menu_title: <String> title of the menu item
+
+  Usage:
+    {% render 'header_menu_item', blocks: section.blocks, menu_title: link.title %}
+{% endcomment %}
+
+{%- assign bg_tooltip = '#feae17' -%}
+{%- assign c_tooltip = '#ffffff' -%}
+{%- assign down_title = menu_title | downcase -%}
+{%- for block in blocks -%}
+  {%- assign block_title = block.settings.menu_label | downcase -%}
+
+  {%- if block.type == 'menu_tooltip' and block_title == down_title -%}
+    {%- assign bg_tooltip = block.settings.bg_tooltip -%}
+    {%- assign c_tooltip = block.settings.c_tooltip -%}
+    {%- assign tooltip_label = block.settings.tooltip_label -%}
+    {%- assign text_transform = block.settings.text_transform -%}
+    {%- assign block_attributes = block.shopify_attributes -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+<span class="position-relative">{{ menu_title }}{%- if tooltip_label != blank -%}<sup class="menu-tooltip text-{{ text_transform }}" style="background-color:{{ bg_tooltip }};color:{{ c_tooltip }}" {{ block_attributes }}>{{ tooltip_label }}</sup>{%- endif -%}</span>

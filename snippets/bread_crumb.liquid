@@ -1,0 +1,62 @@
+{% comment %}
+Renders breadcrumb in every pages except index, login, register and password
+
+  Usage:
+    {% render 'bread_crumb' %}
+{% endcomment %}
+
+<nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+  <div class="container">
+    <a href="/" title="{{ 'layout.breadcrumb.home' | t }}">{{ 'layout.breadcrumb.home' | t }}</a>
+
+    {%- case template.name -%}
+      {%- when 'page' -%}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        <a href="{{ page.url }}" aria-current="page">{{ page.title }}</a>
+      {%- when 'product' -%}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        {%- if collection.url -%}
+          {{ collection.title | link_to: collection.url }}
+          <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        {%- endif -%}
+        <a href="{{ product.url }}" aria-current="page">{{ product.title }}</a>
+      {%- when 'collection' and collection.handle -%}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        {%- if current_tags -%}
+          {{ collection.title | link_to: collection.url }}
+          <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+          {%- capture tag_url -%}{{ collection.url }}/{{ current_tags | join: "+"}}{%- endcapture -%}
+          <a href="{{ tag_url }}" aria-current="page">{{ current_tags | join: " + "}}</a>
+        {%- else -%}
+          <a href="{{ collection.url }}" aria-current="page">{{ collection.title }}</a>
+        {%- endif -%}
+      {%- when 'search' -%}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        {%- if search.performed -%}
+          <a href="/search" aria-current="page">{{ 'general.search.heading' | t: count: search.results_count }}</a>
+          <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+          <a href="{{ request.path }}" aria-current="page">{{ search.terms }}</a>
+        {%- else -%}
+          <a href="{{ request.path }}" aria-current="page">{{ page_title }}</a>
+        {%- endif -%}
+      {%- when 'blog' -%}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        {%- if current_tags -%}
+          {{ blog.title | link_to: blog.url }}
+          <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+          {%- capture tag_url -%}{{blog.url}}/tagged/{{ current_tags | join: "+" }}{%- endcapture -%}
+          <a href="{{ tag_url }}" aria-current="page">{{ current_tags | join: " + " }}</a>
+        {%- else -%}
+          <a href="{{ blog.url }}" aria-current="page">{{ blog.title }}</a>
+        {%- endif -%}
+      {%- when 'article' -%}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        {{ blog.title | link_to: blog.url }}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        <a href="{{ article.url }}" aria-current="page">{{ article.title }}</a>
+      {%- else -%}
+        <span aria-hidden="true" class="breadcrumb__sep">{% render 'icon-dir-right' %}</span>
+        <a href="{{ request.path }}" aria-current="page">{{ page_title }}</a>
+    {%- endcase -%}
+  </div><!-- .container -->
+</nav>

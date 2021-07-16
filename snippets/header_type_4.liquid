@@ -1,0 +1,39 @@
+<div role="header" class="header header-type-4">
+  <div class="ds-flex align-center flex-wrap justify-end">
+
+    <div class="logo-container">
+      {% render 'logo' with section.settings.logo, logo_m: section.settings.logo_mobile, logo_type: section.settings.logo_type,
+        logo_svg: section.settings.logo_svg %}
+    </div><!-- .logo-container -->
+
+    <button class="mobile-btn">
+      <span class="mobile-btn__line"></span>
+      <span class="mobile-btn__line"></span>
+      <span class="mobile-btn__line"></span>
+    </button>
+
+    {% render 'header_menu', a_c: section.settings.header_menu_center %}
+
+    {%- assign add_sticky_cart = true -%}
+
+    <div class="links-group ds-flex align-center{% if section.settings.header_menu_center %} ml-0{% endif %}">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'cart' -%}
+          {%- assign add_sticky_cart = false -%}
+        {%- endif -%}
+        {% render 'topbar_item', item: block %}
+      {%- endfor -%}
+    </div>
+
+    {%- if add_sticky_cart -%}
+      <div class="topbar-item sticky-header_cart cart-wrapper">
+        {% render 'cart_dropdown', cart_style: 'only_icon', amount_pos: 'left' %}
+      </div><!-- .topbar-item -->
+    {%- endif -%}
+
+  </div><!-- .ds-flex.align-center.flex-wrap -->
+</div><!-- .header-type-4 -->
+
+<style>
+.sticky-active .search-form { display: flex; display: -ms-flexbox;}
+</style>

@@ -1,0 +1,188 @@
+{% comment %}
+Renders images in layout 3 style
+  Accepts:
+    - collections_tab: content type - section/block
+      = title: <String> Title of the section
+      = tab_title_style: <String> Tab title style (values: "default", "italic")
+      = subtitle_style: <String> Style for tab (values: "default", "center-big", "center-icon") This is only configurable for section type
+      = limit: <Number> limit number of products to show
+      = num_cols: <Number> columns of products grid
+      = card_style: <String> set card style (available values: "vertical-default", "vertical-advanced", "vertical-progressive", "horizontal-default", "horizontal-advanced", "horizontal-progressive")
+      = card_border: <Boolean> show border around product card
+      = card_shadow: <Boolean> show box shadow around product card
+
+  Block variables:
+    - tab_list: list of tabs
+    - icons_list: list of icons to show under tab title
+
+  Usage:
+    {% render 'collections_tab' with section %}
+    {% render 'collections_tab' with block %}
+{% endcomment %}
+
+{% liquid
+assign tab_list = ''
+assign icons_list = ''
+assign products_list = ''
+assign at_least_one = false
+assign section_title = collections_tab.settings.title
+assign tab_title_style = collections_tab.settings.tab_title_style
+assign subtitle_style = collections_tab.settings.subtitle_style
+assign limit = collections_tab.settings.limit
+assign num_cols = collections_tab.settings.cols
+assign card_style = collections_tab.settings.card_style
+assign card_border = collections_tab.settings.card_border
+assign card_shadow = collections_tab.settings.card_shadow
+%}
+
+<div class="vs-grid-isotope">
+{%- if section_title != blank -%}
+  <h3 class="block-title" style="font-size: 2.5em !important; color: #28252c !important;">{{ section_title }}</h3>
+{%- endif -%}
+
+<div class="tabs ds-flex flex-column position-relative">
+
+{%- if c_type == 'block' -%}
+  <div class="isotope-container row {{ card_style }}">
+    {%- for index in (1..5) -%}
+      {%- assign first_block = forloop.first -%}
+      {% capture collection_id %}collection_{{ index }}{% endcapture %}
+
+      {%- if collections_tab.settings[collection_id] != blank -%}
+        {%- assign collection_name = collections_tab.settings[collection_id] -%}
+        {%- assign crt_ct = collections[collection_name] -%}
+        {%- assign tab_list = tab_list | append: crt_ct.handle | append: ';' -%}
+        {%- if card_style contains 'horizontal' -%}
+          {%- assign img_max = 250 -%}
+        {%- else -%}
+          {%- if settings.layout == 'full_width' -%}
+            {%- assign screen_width = 1920 -%}
+          {%- else -%}
+            {%- assign screen_width = settings.layout -%}
+          {%- endif -%}
+          {%- assign img_max = screen_width | divided_by: num_cols -%}
+        {%- endif -%}
+
+        {%- for product in crt_ct.products limit: limit -%}
+          {%- if products_list contains product.id -%}
+            {%- continue -%}
+          {%- endif -%}
+          {%- assign products_list = products_list | append: product.id | append: ',' -%}
+          {%- assign class = '' -%}
+          {%- for cc in product.collections -%}
+            {%- assign class = class | append: 'vnd-ist-' | append: cc.handle | append: ' ' -%}
+          {%- endfor -%}
+          {%- if at_least_one -%}
+            {%- assign class = class | append: 'ds-none' -%}
+          {%- endif -%}
+          <div class="grid-items__{{ num_cols }} {{ class }}">
+            {% render 'product_card', product: product, card_style: card_style, card_border: card_border, card_shadow: card_shadow, img_max: img_max %}
+          </div>
+        {%- endfor -%}
+
+        {%- assign at_least_one = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- unless at_least_one -%}
+      {%- for index in (1..5) -%}
+        {% assign tab_list = tab_list | append: 'unassigned-' | append: forloop.index | append: ';' %}
+        {%- assign first_block = forloop.first -%}
+        {%- assign block_index = forloop.index -%}
+
+        {%- for i in (1..limit) -%}
+          <div class="grid-items__{{ num_cols }} unassigned-{{ block_index }}">
+            {%- capture pp_index -%}{% cycle 1, 2, 3, 4, 5, 6 %}{%- endcapture -%}
+            {% render 'product_card', pp_index: pp_index, card_style: card_style, card_border: card_border, card_shadow: card_shadow %}
+          </div>
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endunless -%}
+  </div><!-- .isotope-container -->
+
+{%- else -%}
+  <div class="isotope-container row {{ card_style }}" {{ block.shopify_attributes }}>
+    {%- for block in collections_tab.blocks -%}
+      {%- assign icons_list = icons_list | append: block.settings.icon | append: ';' -%}
+      {%- assign collection_name = block.settings.collection -%}
+      {%- assign crt_ct = collections[collection_name] -%}
+
+      {%- if collection_name == blank or crt_ct == blank -%}
+        {%- assign tab_list = tab_list | append: 'unassigned-' | append: forloop.index | append: ';' -%}
+        {%- assign first_block = forloop.first -%}
+        {%- assign block_index = forloop.index -%}
+
+        {%- for i in (1..limit) -%}
+          <div class="grid-items__{{ num_cols }} unassigned-{{ block_index }}{% if at_least_one %} ds-none{% endif %}">
+            {%- capture pp_index -%}{% cycle 1, 2, 3, 4, 5 %}{%- endcapture -%}
+            {% render 'product_card', pp_index: pp_index, card_style: card_style, card_border: card_border, card_shadow: card_shadow %}
+          </div>
+        {%- endfor -%}
+
+        {%- assign at_least_one = true -%}
+
+      {%- else -%}
+        {%- assign tab_list = tab_list | append: crt_ct.handle | append: ';' -%}
+
+        {%- for product in crt_ct.products limit: limit -%}
+          {%- if products_list contains product.id -%}
+            {%- continue -%}
+          {%- endif -%}
+          {%- assign products_list = products_list | append: product.id | append: ',' -%}
+          {%- assign class = '' -%}
+          {%- for cc in product.collections -%}
+            {%- assign class = class | append: 'vnd-ist-' | append: cc.handle | append: ' ' -%}
+          {%- endfor -%}
+
+          {%- if at_least_one -%}
+            {%- assign class = class | append: 'ds-none' -%}
+          {%- endif -%}
+
+          <div class="grid-items__{{ num_cols }} {{ class }}">
+            {% render 'product_card', product: product, card_style: card_style, card_border: card_border, card_shadow: card_shadow %}
+          </div>
+        {%- endfor -%}
+
+        {%- assign at_least_one = true -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div><!-- .isotope-container -->
+{%- endif -%}
+
+{% assign tab_array = tab_list | remove_last: ';' | split: ';' %}
+{% assign icons_array = icons_list | remove_last: ';' | split: ';' %}
+
+<ul style="display: none;" class="tab-list list-style-none ds-flex flex-wrap {{ collections_tab.settings.tab_title_align }}">
+  {%- for tab in tab_array -%}
+    <li>
+      <a href="#" class="ds-block isotope-selector{% if forloop.first == true %} active{% endif %} {{ tab_title_style }}" data-target=".vnd-ist-{{ tab }}" style="text-transform: capitalize; font-size: 1.7rem;">
+        {%- if icons_array[forloop.index0] != blank and subtitle_style == 'center-icon' -%}
+          {% render 'render_icon', icon_name: icons_array[forloop.index0] %}
+        {%- endif -%}
+        {%- if collections[tab] != blank -%}
+          <span>{{ collections[tab].title }}</span>
+        {%- else -%}
+          <span>{{ tab }}</span>
+        {%- endif -%}
+      </a>
+    </li>
+  {%- endfor -%}
+</ul>
+
+<select class="{{ collections_tab.settings.tab_title_align }} isotope-mobile-selector {{ tab_title_style }}">
+  {%- for tab in tab_array -%}
+    <option value=".vnd-ist-{{ tab }}"{% if forloop.first == true %} selected="selected"{% endif %}>
+      {%- if icons_array[forloop.index0] != blank and subtitle_style == 'center-icon' -%}
+        {% render 'render_icon', icon_name: icons_array[forloop.index0] %}
+      {%- endif -%}
+      {%- if collections[tab] != blank -%}
+        <span>{{ collections[tab].title }}</span>
+      {%- else -%}
+        <span>{{ tab }}</span>
+      {%- endif -%}
+    </option>
+  {%- endfor -%}
+</select>
+
+</div><!-- .tabs -->
+</div>

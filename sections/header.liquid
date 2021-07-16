@@ -1,0 +1,613 @@
+{%- assign header_type = section.settings.header_type -%}
+
+<div class="container{% unless section.settings.show_dropdown_icon %} menu-dropdown-hide{% endunless %}{% if section.settings.header_sticky %} sticky-enable{% endif %}">
+  {%- case header_type -%}
+    {%- when "1" -%}
+      {% render 'header_type_1', section: section %}
+    {%- when "2" -%}
+      {% render 'header_type_2', section: section %}
+    {%- when "3" -%}
+      {% render 'header_type_3', section: section %}
+    {%- when "4" -%}
+      {% render 'header_type_4', section: section %}
+    {%- else -%}
+      {% render 'header_type_5', section: section %}
+  {%- endcase -%}
+  <div class="mobile-menu-overlay"></div>
+</div>
+
+<style>
+#shopify-section-header{background-color:{{ section.settings.c_bg }};color:{{ section.settings.c_text }}}
+#shopify-section-header .logo-image{max-width:{{section.settings.logo_max_width}}px}
+{%- if section.settings.padding != blank -%}
+@media(min-width: 1200px) {#shopify-section-header .header{padding:{{section.settings.padding}};}}
+{%- endif -%}
+@media (min-width: 1400px) {.header-menu-item>a{
+padding-right: {{section.settings.space_menu_item|divided_by: 2}}px;
+padding-left: {{section.settings.space_menu_item|divided_by: 2}}px;}}
+</style>
+
+{% schema %}
+{
+  "name": "Header",
+  "tag": "header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header Configuration"
+    },
+    {
+      "type": "select",
+      "id": "header_type",
+      "label": "Style",
+      "options": [
+        { "value": "1", "label": "Header Type 1" },
+        { "value": "2", "label": "Header Type 2" },
+        { "value": "3", "label": "Header Type 3" },
+        { "value": "4", "label": "Header Type 4" },
+        { "value": "5", "label": "Header Type 5" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "padding",
+      "label": "Padding",
+      "info": "sequence: top-right-bottom-left (ex: 10px 0 10px 0)"
+    },
+    {
+      "type": "color",
+      "id": "c_bg",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "c_text",
+      "label": "Text color",
+      "default": "#3f3f3f"
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "select",
+      "id": "logo_type",
+      "label": "Logo type",
+      "options": [
+        { "value": "image", "label": "I am using image logo" },
+        { "value": "svg", "label": "I am using svg logo" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "text",
+      "id": "logo_svg",
+      "label": "Svg file name"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Mobile logo image(Optional)",
+      "info": "If blank, general logo is resized and used on mobiles"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "min": 50,
+      "max": 450,
+      "step": 10,
+      "unit": "px",
+      "label": "Custom logo width",
+      "default": 250
+    },
+    {
+      "type": "header",
+      "content": "Main Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "header_menu_center",
+      "label": "Align menu center",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "header_sticky",
+      "label": "Sticky Header",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dropdown_icon",
+      "label": "Show Dropdown Icon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "space_menu_item",
+      "min": 40,
+      "max": 90,
+      "step": 2,
+      "unit": "px",
+      "label": "Space between menu items",
+      "default": 56
+    },
+    {
+      "type": "header",
+      "content": "Promotion on Header",
+      "info": "Only works on header type 2 and 5"
+    },
+    {
+      "type": "text",
+      "id": "promo_icon1",
+      "label": "Icon Name"
+    },
+    {
+      "type": "text",
+      "id": "promo_title1",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "promo_text1",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "promo_icon2",
+      "label": "Icon Name"
+    },
+    {
+      "type": "text",
+      "id": "promo_title2",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "promo_text2",
+      "label": "Text"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu_style",
+      "name":"Main Menu Style",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_label",
+          "label": "Navigation Label",
+          "info": "Input name of the navigation item you are going to style"
+        },
+        {
+          "type": "select",
+          "id": "dropdown_style",
+          "label": "Type",
+          "options": [
+            { "value": "dropdown-classic", "label": "Classic Dropdown" },
+            { "value": "dropdown-mega", "label": "Mega Menu" }
+          ],
+          "default": "dropdown-classic"
+        },
+        {
+          "type": "paragraph",
+          "content": "Top Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "top_img1",
+          "label": "Top Image 1",
+          "info": "210*80px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "top_img2",
+          "label": "Top Image 2",
+          "info": "210*80px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "top_img3",
+          "label": "Top Image 3",
+          "info": "210*80px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "top_img4",
+          "label": "Top Image 4",
+          "info": "210*80px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "top_img5",
+          "label": "Top Image 5",
+          "info": "210*80px recommended"
+        },
+        {
+          "type": "paragraph",
+          "content": "Bottom Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "bottom_img1",
+          "label": "Bottom Image 1",
+          "info": "370*170px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "bottom_img2",
+          "label": "Bottom Image 2",
+          "info": "370*170px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "bottom_img3",
+          "label": "Bottom Image 3",
+          "info": "370*170px recommended"
+        },
+        {
+          "type": "image_picker",
+          "id": "bottom_img4",
+          "label": "Bottom Image 4",
+          "info": "370*170px recommended"
+        }
+      ]
+    },
+    {
+      "type": "menu_tooltip",
+      "name":"Menu Icon Tooltip",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_label",
+          "label": "Navigation Label",
+          "info": "Input name of the navigation item you are going to style"
+        },
+        {
+          "type": "text",
+          "id": "tooltip_label",
+          "label": "Tooltip Label",
+          "info": "Input label of the tooltip"
+        },
+        {
+          "type": "color",
+          "id": "bg_tooltip",
+          "label": "Background color",
+          "default": "#feae17"
+        },
+        {
+          "type": "color",
+          "id": "c_tooltip",
+          "label": "Text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "select",
+          "id": "text_transform",
+          "label": "Style",
+          "options": [
+            { "value": "capitalize", "label": "Capitalize" },
+            { "value": "lowercase", "label": "Lowercase" },
+            { "value": "uppercase", "label": "Uppercase" }
+          ],
+          "default": "lowercase"
+        }
+      ]
+    },
+    {
+      "type":"search_box",
+      "name":"Search Box",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "search_style",
+          "label": "Style",
+          "options": [
+            { "value": "search-box-fixed", "label": "Show box" },
+            { "value": "search-box-popup", "label": "Popup box" },
+            { "value": "search-line-popup", "label": "Popup Line" }
+          ],
+          "default": "search-box-popup"
+        },
+        {
+          "type": "text",
+          "id": "search_icon",
+          "label": "Icon",
+          "default": "icon-search",
+          "info": "[Browse icons](https://docs.flexkitux.com/pages/icons-list.html)"
+        },
+        {
+          "type": "range",
+          "id": "size_icon",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "label": "Icons size",
+          "default": 14
+        },
+        {
+          "type": "select",
+          "id": "search_btn_border",
+          "label": "Search box border",
+          "options": [
+            { "value": "0", "label": "Hide" },
+            { "value": "1", "label": "1px" },
+            { "value": "2", "label": "2px" }
+          ],
+          "default": "2"
+        },
+        {
+          "type": "paragraph",
+          "content": "Search Button Colors"
+        },
+        {
+          "type": "color",
+          "id": "color_search",
+          "label": "Search button color",
+          "default": "#555555"
+        },
+        {
+          "type": "color",
+          "id": "color_search_h",
+          "label": "Search button color on hover",
+          "default": "#555555"
+        },
+        {
+          "type": "paragraph",
+          "content": "Search Input Box Colors"
+        },
+        {
+          "type": "color",
+          "id": "color_search_ib",
+          "label": "Search input box border color",
+          "default": "#555555"
+        },
+        {
+          "type": "color",
+          "id": "color_search_input",
+          "label": "Search input box text color",
+          "default": "#555555"
+        }
+      ]
+    },
+    {
+      "type":"wishlist",
+      "name":"Wishlist",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon",
+          "default": "icon-heart"
+        },
+        {
+          "type": "range",
+          "id": "size_icon",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "label": "Icons size",
+          "default": 14
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Wishlist button title",
+          "default": "Wishlist"
+        },
+        {
+          "type": "select",
+          "id": "item_count_pos",
+          "label": "Count position",
+          "options": [
+            { "value": "item-count__default", "label": "Default position" },
+            { "value": "item-count__left", "label": "Left" },
+            { "value": "item-count__right", "label": "Right" }
+          ],
+          "default": "item-count__left"
+        }
+      ]
+    },
+    {
+      "type":"compare",
+      "name":"Comparison List",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon",
+          "default": "icon-repeat-circle"
+        },
+        {
+          "type": "range",
+          "id": "size_icon",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "label": "Icons size",
+          "default": 14
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Button title",
+          "default": "Compare"
+        },
+        {
+          "type": "select",
+          "id": "item_count_pos",
+          "label": "Count position",
+          "options": [
+            { "value": "item-count__default", "label": "Default position" },
+            { "value": "item-count__left", "label": "Left" },
+            { "value": "item-count__right", "label": "Right" }
+          ],
+          "default": "item-count__left"
+        }
+      ]
+    },
+    {
+      "type": "cart",
+      "name": "Cart Dropdown",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "size_icon",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "label": "Icons size",
+          "default": 14
+        },
+        {
+          "type": "select",
+          "id": "header_cart_style",
+          "label": "Cart style",
+          "options": [
+            { "value": "show_amount", "label": "Show cart amount beside the icon" },
+            { "value": "show_abs_amount", "label": "Show cart amount on the icon" },
+            { "value": "only_icon", "label": "Show only cart icon" }
+          ],
+          "default": "show_amount"
+        },
+        {
+          "type": "color",
+          "id": "cart_bg",
+          "label": "Cart background color",
+          "default": "rgba(0,0,0,0)"
+        },
+        {
+          "type": "color",
+          "id": "cart_color",
+          "label": "Cart text color",
+          "default": "#757575"
+        },
+        {
+          "type": "color",
+          "id": "cart_icon",
+          "label": "Cart icon color",
+          "default": "#b8b8b8"
+        },
+        {
+          "type": "paragraph",
+          "content": "Below settings only work when cart style is 'Show cart amount on the icon icon' or 'Show only cart icon'"
+        },
+        {
+          "type": "select",
+          "id": "amount_pos",
+          "label": "Cart amount position",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "right"
+        },
+        {
+          "type": "color",
+          "id": "c_amount_bg",
+          "label": "Cart amount background",
+          "default": "#fee71b"
+        },
+        {
+          "type": "color",
+          "id": "c_amount_text",
+          "label": "Cart amount text color",
+          "default": "#363f46"
+        }
+      ]
+    },
+    {
+      "type": "login",
+      "name": "Customer Login Link",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Please allow customer accounts to show this link. [Learn More](https://help.shopify.com/en/manual/checkout-settings/customer-accounts)"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon"
+        },
+        {
+          "type": "range",
+          "id": "size_icon",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "label": "Icons size",
+          "default": 14
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "text",
+          "default": "Login"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "{{ shop.name }}",
+  {% if section.settings.logo %}
+    {% assign image_size = section.settings.logo.width | append:'x' %}
+    "logo": "https:{{ section.settings.logo | img_url: image_size }}",
+  {% endif %}
+  "sameAs": [
+    "{{ settings.social_twitter_link }}",
+    "{{ settings.social_facebook_link }}",
+    "{{ settings.social_pinterest_link }}",
+    "{{ settings.social_instagram_link }}",
+    "{{ settings.social_tumblr_link }}",
+    "{{ settings.social_snapchat_link }}",
+    "{{ settings.social_youtube_link }}",
+    "{{ settings.social_vimeo_link }}"
+  ],
+  "url": "{{ shop.url }}{{ page.url }}"
+}
+</script>
+
+{% if template.name == 'index' %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": "{{ shop.name }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ shop.url }}/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "url": "{{ shop.url }}{{ page.url }}"
+    }
+  </script>
+{% endif %}

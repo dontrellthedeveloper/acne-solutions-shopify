@@ -1,0 +1,28 @@
+{% comment %}
+Renders manufacturer slider as a block in sections with sidebar
+  Accepts:
+    - logo: <Image> main image object
+    - max_w: <Number> max width of logo
+    - a_c: <String> additional class names
+
+  Usage:
+    {% render 'logo' with section.settings.logo, logo_m: section.settings.logo_mobile, logo_type: section.settings.logo_type,
+      logo_svg: section.settings.logo_svg %}
+{% endcomment %}
+
+<a href="{{ shop.url }}" class="logo-image {{ a_c }}">
+  {%- if logo_type == 'svg' and logo_svg != blank -%}
+    {% render 'render_icon', icon_name: logo_svg %}
+  {%- elsif logo_type == 'image' and logo != blank -%}
+    {% capture image_size %}{{ max_w }}x{% endcapture %}
+    <img class="logo-image__desc" src="{{ logo | img_url: 'master' }}" alt="{{ logo.alt | default: shop.name }}">
+
+    {%- if logo_m != blank -%}
+      <img class="logo-image__mobile" src="{{ logo_m | img_url: 'master' }}" alt="{{ logo_m.alt | default: shop.name }}">
+    {%- else -%}
+      <img class="logo-image__mobile" src="{{ logo | img_url: 'master' }}" alt="{{ logo.alt | default: shop.name }}">
+    {%- endif -%}
+  {%- else -%}
+    {{ shop.name }}
+  {%- endif -%}
+</a>

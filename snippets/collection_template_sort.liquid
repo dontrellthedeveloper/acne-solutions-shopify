@@ -1,0 +1,13 @@
+{% comment %}
+Renders collection sorting options in collections page
+
+  Usage:
+    {% render 'collection_template_sort' %}
+{% endcomment %}
+
+{%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+<select id="sort-by" class="collection-sort__by" name="sort_by" data-default-sortby="{{ collection.default_sort_by }}">
+  {%- for option in collection.sort_options -%}
+    <option value="{{ option.value }}" {% if option.value == sort_by %}selected="selected"{% endif %}>{{ option.name }}</option>
+  {%- endfor -%}
+</select>

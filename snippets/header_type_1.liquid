@@ -1,0 +1,25 @@
+<div role="banner" class="header ds-flex align-center header-type-1">
+  {% render 'logo' with section.settings.logo, logo_m: section.settings.logo_mobile, logo_type: section.settings.logo_type,
+      logo_svg: section.settings.logo_svg %}
+
+  <button class="mobile-btn">
+    <span class="mobile-btn__line"></span>
+    <span class="mobile-btn__line"></span>
+    <span class="mobile-btn__line"></span>
+  </button>
+
+  {% render 'header_menu', a_c: section.settings.header_menu_center %}
+
+  {%- if section.settings.header_menu_center -%}
+    {%- assign a_class = " mr-0" -%}
+  {%- else -%}
+    {%- assign a_class = "" -%}
+  {%- endif -%}
+
+  <div class="links-group{{ a_class }}">
+    {%- for block in section.blocks -%}
+      {% render 'topbar_item', item: block %}
+    {%- endfor -%}
+  </div>
+
+</div><!-- .header-type-1 -->

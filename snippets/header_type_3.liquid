@@ -1,0 +1,38 @@
+<div role="banner" class="header header-type-3">
+  <div class="ds-flex align-center flex-wrap">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'search_box' -%}
+        {%- assign b_s = block -%}
+      {%- elsif block.type == 'cart' -%}
+        {%- assign b_c = block -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {% render 'topbar_item', item: b_s %}
+
+    <div class="logo-container">
+      {% render 'logo' with section.settings.logo, logo_m: section.settings.logo_mobile, logo_type: section.settings.logo_type,
+        logo_svg: section.settings.logo_svg %}
+    </div><!-- .logo-container -->
+
+    {% render 'topbar_item', item: b_c %}
+
+    <button class="mobile-btn">
+      <span class="mobile-btn__line"></span>
+      <span class="mobile-btn__line"></span>
+      <span class="mobile-btn__line"></span>
+    </button>
+  </div><!-- .ds-flex.align-center.flex-wrap -->
+
+  <div class="full-width full-width-menu">
+    <div class="container position-relative">
+      {% render 'header_menu', a_c: section.settings.header_menu_center %}
+    </div>
+  </div><!-- .full-width-menu -->
+</div><!-- .header-type-3 -->
+
+<style>
+.sticky-active .promo-container{display:none;}
+.sticky-active .search-form {display:flex;display:-ms-flexbox;}
+@media (min-width: 992px){.sticky-active .full-width-menu{display: none}}
+</style>

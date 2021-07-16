@@ -1,0 +1,52 @@
+{% comment %}
+Renders tags filter block in sidebars
+  Accepts:
+    - block: content to show - section/block
+      - block_title: <String> title of the block
+      - block_type: <String> block type (vales: "color", checkbox")
+      - tags_list: <String> tags list
+
+  Usage:
+    {% render 'collection_sidebar_filter' with block %}
+{% endcomment %}
+
+{%- liquid
+assign block_title = collection_sidebar_filter.settings.title
+assign block_type = collection_sidebar_filter.settings.type
+assign tick_style = collection_sidebar_filter.settings.tick_style
+assign tags_list = collection_sidebar_filter.settings.tags_list | strip_newlines | strip | replace: ', ', ',' | replace: ' ,', ',' | split: ','
+-%}
+
+{%- if block_title != blank -%}
+  <h3 class="block-title">{{ block_title }}</h3>
+{%- endif -%}
+
+{%- if block_type == 'color' -%}
+
+<ul class="list-style-none filter-list filter-color">
+  {%- for tag in tags_list -%}
+    {%- if collection.all_tags contains tag -%}
+      {% assign safeValue = tag | replace: '"', '&quot;' %}
+      {% assign downValue = tag | downcase %}
+      <li class="nav-level__0">
+        <a href="#" class="nav-list__link {{ tick_style }}{% if downValue == 'white' or downValue == '#fff' or downValue == '#ffffff'%} option-label-white{% endif %}" style="background-color: {{ tag | downcase }};">
+          <span class="ticksign" data-color="{{ tag }}">{% render 'icon-ticksign' %}</span>
+        </a>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+</ul>
+
+{%- else -%}
+
+<ul class="list-style-none filter-list filter-tag">
+  {%- for tag in tags_list -%}
+    {%- if collection.all_tags contains tag -%}
+      <li class="nav-level__0">
+        <a href="#" class="nav-list__link {{ tick_style }}"><span class="ticksign">{% render 'icon-ticksign' %}</span>{{ tag | strip | downcase }}</a>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+</ul>
+
+{%- endif -%}

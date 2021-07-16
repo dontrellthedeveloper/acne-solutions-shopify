@@ -1,0 +1,208 @@
+<div style="margin: {{ section.settings.margin }};" class="message-phone-css-blog">
+  <div class="container">
+    {% render 'latest_news' with section %}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Blogs carousel",
+  "tag": "section",
+  "class": "vs-initialize-slider vs-blogs-carousel",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "margin",
+      "label": "Section margin",
+      "info": "Set margin for section top-right-bottom-left (e.g. 20px 15px 10px 0)",
+      "default": "0 0 150px 0"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section title",
+      "default": "Latest News"
+    },
+    {
+      "type": "blog",
+      "id": "latest_blog",
+      "label": "Select Blog"
+    },
+    {
+      "type": "header",
+      "content": "Carousel settings"
+    },
+    {
+      "type": "text",
+      "id": "auto_speed",
+      "label": "Autoplay Speed",
+      "info": "5 means rotate every 5 seconds. 0 to disable auto rotate.",
+      "default": "5"
+    },
+    {
+      "type": "range",
+      "id": "cols",
+      "label": "Number of articles to show at once",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show pagination Dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav",
+      "label": "Show navigation",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "nav_style",
+      "label": "Navigator position",
+      "options": [
+        { "value": "nav-top__right", "label": "Top right" },
+        { "value": "nav-top__center", "label": "Top center" },
+        { "value": "nav-middle", "label": "Middle center" }
+      ],
+      "default": "nav-top__right"
+    },
+    {
+      "type": "header",
+      "content": "Style settings"
+    },
+    {
+      "type": "select",
+      "id": "image_style",
+      "label": "Image size",
+      "options": [
+        { "value": "default", "label": "Set height relative to image" },
+        { "value": "fixed-height", "label": "Fixed height" }
+      ],
+      "default": "fixed-height"
+    },
+    {
+      "type": "select",
+      "id": "ln_style",
+      "label": "Image and text position",
+      "options": [
+        { "value": "default", "label": "Position text under image" },
+        { "value": "text-on-right", "label": "Position text on the right" },
+        { "value": "text-override", "label": "Position text override image" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show blog excerpt",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show post date",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comment",
+      "label": "Show comment numbers",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "pos_date_comment",
+      "label": "Date and comment position",
+      "options": [
+        { "value": "relative", "label": "Before image" },
+        { "value": "absolute", "label": "Overwrite image" }
+      ],
+      "default": "relative"
+    },
+    {
+      "type": "header",
+      "content": "Typography Settings"
+    },
+    {
+      "type": "range",
+      "id": "size_title",
+      "label": "Title font size",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "size_excerpt",
+      "label": "Excerpt font size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "color_title",
+      "label": "Article title color",
+      "default": "#3d3d3d"
+    },
+    {
+      "type": "color",
+      "id": "color_excerpt",
+      "label": "Article excerpt color",
+      "default": "#797979"
+    },
+    {
+      "type": "color",
+      "id": "c_time",
+      "label": "Article time color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "bg_time",
+      "label": "Article time background",
+      "default": "#90a900"
+    },
+    {
+      "type": "color",
+      "id": "bd_time",
+      "label": "Article time border",
+      "default": "#90a900"
+    },
+    {
+      "type": "color",
+      "id": "c_cmt",
+      "label": "Comment color",
+      "default": "#3f3f3f"
+    },
+    {
+      "type": "color",
+      "id": "bg_cmt",
+      "label": "Comment background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "bd_cmt",
+      "label": "Comment border color",
+      "default": "#ebebeb"
+    }
+  ],
+  "presets": [{
+    "name": "Blogs carousel",
+    "category": "Blog Post"
+  }]
+}
+{% endschema %}

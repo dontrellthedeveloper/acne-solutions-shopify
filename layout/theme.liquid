@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="{{ request.locale.name }}" class="vnd-nsl-pp-{{ settings.anm_newsletter_pp }} vnd-qv-pp-{{ settings.anm_qv_pp }} vnd-zoom-pp-{{ settings.anm_zoom_pp }} vnd-cart-btn-{{ settings.anm_cart_btn }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.c_theme }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  <link rel="dns-prefetch" href="//shopify.com" crossorigin>
+  <link rel="dns-prefetch" href="//v.shopify.com" crossorigin>
+
+  {%- if settings.favicon != blank -%}
+    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+  {%- endif -%}
+  
+  
+  
+  
+  
+  <link rel="apple-touch-icon" sizes="57x57" href="{{ 'apple-icon-57x57-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="60x60" href="{{ 'apple-icon-60x60-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="72x72" href="{{ 'apple-icon-72x72-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="76x76" href="{{ 'apple-icon-76x76-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="114x114" href="{{ 'apple-icon-114x114-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="120x120" href="{{ 'apple-icon-120x120-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="144x144" href="{{ 'apple-icon-144x144-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{{ 'apple-icon-152x152-2.png' | asset_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-icon-180x180-2.png' | asset_url }}">
+  
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Engagement&family=Lovers+Quarrel&family=Ruthie&family=Stalemate&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Euphoria+Script&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Bilbo+Swash+Caps&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Bilbo&family=Bilbo+Swash+Caps&display=swap" rel="stylesheet">
+
+	<link href="{{ 'favicon-2-96x96.ico' | asset_url }}" rel="shortcut icon" />
+  
+  
+  
+  
+  
+  
+
+  {%- capture seo_title -%}
+    {%- if request.page_type == 'search' and search.performed == true -%}
+      {{ 'general.search.heading' | t: count: search.results_count }}: {{ 'general.search.results_with_count_html' | t: terms: search.terms, count: search.results_count | strip_html }}
+    {%- else -%}
+      {{ page_title }}
+    {%- endif -%}
+    {%- if current_tags -%}
+      {%- assign meta_tags = current_tags | join: ', ' -%} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+    {%- endif -%}
+    {%- if current_page != 1 -%}
+      &ndash; {{ 'general.meta.page' | t: page: current_page }}
+    {%- endif -%}
+    {%- assign escaped_page_title = page_title | escape -%}
+    {%- unless escaped_page_title contains shop.name -%}
+      &ndash; {{ shop.name }}
+    {%- endunless -%}
+  {%- endcapture -%}
+  <title>{{ seo_title | strip }}</title>
+
+  {% if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif -%}
+
+  {% render 'social_meta_tags' %}
+
+  {% render 'theme_style_tags' %}
+
+  {% render 'theme_script_tags' %}
+
+  {{ content_for_header }}
+{% include 'sca-quick-view-init' %}
+  
+  	{{ 'responsive-new.scss' | asset_url | stylesheet_tag }}
+    {{ 'before-n-after.scss' | asset_url | stylesheet_tag }}
+ </head>
+
+<body id="{{ page_title | handle }}" class="template-{{ template.name | handle }} {{ settings.bt_style }} {{ settings.product_action_pos }} {{ settings.product_action_style }} {{ settings.dot_style }} {{ settings.product_cd_align }} {{ settings.anm_img_loader }}{% if settings.vertical_card_wishlist %} product-card__btn-wishlist{% endif %}"
+  data-shop-currency="{{ shop.currency }}"
+  data-shop-money-with-currency-format="{{ shop.money_with_currency_format }}"
+  data-shop-money-currency-format="{{ shop.money_format }}"
+  data-template="{{ request.page_type }}">
+
+  {%- if settings.enable_top_promotion -%}
+    {% section 'text-with-icon' %}
+  {%- endif -%}
+
+  {% section 'top-bar' %}
+  {% section 'header' %}
+
+  <main role="main" id="MainContent" class="{{ settings.product_swatch_style }}">
+    {%- if settings.enable_breadcrumb -%}
+      {%- unless template == 'index' or template == 'cart' or template == 'list-collections' or template == '404' -%}
+        {% render 'bread_crumb' %}
+      {%- endunless -%}
+    {%- endif -%}
+
+    {{ content_for_layout }}
+    
+
+  </main>
+
+  {% section 'footer' %}
+
+  {% section 'cookie-notification' %}
+
+  {% render 'popups' %}
+{% include 'sca-quick-view-template' %} 
+ 
+<!-- **BEGIN** Hextom SPM Integration // Main Include - DO NOT MODIFY -->
+        {% render 'hextom_spm_main', product: product, customer: customer %}
+        <!-- **END** Hextom SPM Integration // Main Include - DO NOT MODIFY -->
+    	{{ 'responsive-script.js' | asset_url | script_tag }}
+  {% include 'paywhirl-settings' %}
+</body>
+</html>

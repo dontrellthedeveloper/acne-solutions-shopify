@@ -1,0 +1,102 @@
+{% comment %}
+Renders newsletter form style 1
+  Accepts:
+    - section: {Object} content type - section/block
+      = title: {String} newsletter form title
+      = description: {String} Newsletter form description
+      = style: {Number} newsletter form style (value: 1)
+
+  Usage:
+    {% render 'newsletter_form_style1', section: section %}
+    {% render 'newsletter_form_style1', section: block %}
+{% endcomment %}
+
+<style>
+.newsletter-{{ section.id }} .title{color:{{section.settings.color_title}}}
+.newsletter-{{ section.id }} .newsletter-subtitle{color:{{section.settings.color_desc}}}
+.newsletter-{{ section.id }} input{background-color:{{section.settings.color_input_bg }};color:{{section.settings.color_input}}}
+.newsletter-{{ section.id }} svg{fill:{{section.settings.color_title}}}
+.newsletter-{{ section.id }} .btn-round{background-color:{{section.settings.color_btn_bg}};color:{{section.settings.color_btn}}}
+.newsletter-{{ section.id }} .btn-round:hover{background-color:{{section.settings.color_btn_hover}}}
+</style>
+
+
+<div class="newsletter newsletter-form container flex-wrap align-center style1 newsletter-{{ section.id }}">
+  <div class="align-center">
+    {%comment%}
+    {% render 'icon-sendmessage' %}
+    {%endcomment%}
+    <div class="flex-column news-l-form">
+      <h3 class="title">{{ section.settings.title | newline_to_br }}</h3>
+      <p class="newsletter-subtitle">{{ section.settings.description | newline_to_br }}</p>
+    </div>
+              <div class="footer-item footer-form footer-newsletter position-relative ">
+            <div class="form-container ">
+              <h3 class="footer-menu__title">{{ block.settings.form_title }}</h3>
+
+              {%- if settings.newsletter_service == 'shopify-default' -%}
+                {% form 'customer', class: 'ds-flex flex-wrap position-relative newsletter-form-new-css' %}
+                  {% render 'form_status', form: form, form_id: formId, success_message: 'general.newsletter_form.confirmation' | t %}
+                  {% unless form.posted_successfully? %}
+                    <input type="hidden" name="contact[tags]" value="newsletter">
+                    <input type="email" name="contact[email]" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" autocorrect="off" autocapitalize="off">
+                    <button type="submit" name="commit" class="btn btn-round">{{ 'general.newsletter_form.submit' | t }}</button>
+                  {% endunless %}
+                {% endform %}
+              {%- else -%}
+                <form class="ds-flex flex-wrap position-relative" action="{{ settings.newsletter_form_action }}" method="post" target="_blank" name="mc-embedded-subscribe-form">
+                  <input type="email" placeholder="{{ block.settings.email_text }}" name="EMAIL" required/>
+                  <button type="submit" class="btn btn-round">{{ 'general.newsletter_form.submit' | t }}</button>
+                </form>
+              {%- endif -%}
+
+              <p class="description">{{ block.settings.description | newline_to_br }}</p>
+            </div>
+          </div>
+  </div><!-- .ds-flex.align-center -->
+  {%comment%}
+  {%- if settings.newsletter_service == 'shopify-default' -%}
+    {% form 'customer', class: 'form-newsletter news-l-form', id: form.id %}
+      {% render 'form_status', form: form, form_id: formId, success_message: 'general.newsletter_form.confirmation' | t %}
+      {% unless form.posted_successfully? %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <input type="email" name="contact[email]" class="input-round" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" autocorrect="off" autocapitalize="off" required>
+        <button type="submit" name="commit" class="btn btn-round">{{ 'general.newsletter_form.submit' | t }}</button>
+      {% endunless %}
+    {% endform %}
+  {%- else -%}
+    <form action="{{ settings.newsletter_form_action }}" method="post" name="mc-embedded-subscribe-form" class="form-newsletter">
+      <input class="input-round" placeholder="Enter your email address" type="email" value="{% if customer %}{{ customer.email }}{% endif %}" name="EMAIL" required/>
+      <button type="submit" name="subscribe" class="btn btn-round">{{ 'general.newsletter_form.submit' | t }}</button>
+    </form>
+  
+  {%- endif -%}
+  {%endcomment%}
+</div><!-- .newsletter -->
+
+
+  {%comment%}
+          <div class="footer-item footer-form footer-newsletter position-relative ">
+            <div class="form-container ">
+              <h3 class="footer-menu__title">{{ block.settings.form_title }}</h3>
+
+              {%- if settings.newsletter_service == 'shopify-default' -%}
+                {% form 'customer', class: 'ds-flex flex-wrap position-relative newsletter-form-new-css' %}
+                  {% render 'form_status', form: form, form_id: formId, success_message: 'general.newsletter_form.confirmation' | t %}
+                  {% unless form.posted_successfully? %}
+                    <input type="hidden" name="contact[tags]" value="newsletter">
+                    <input type="email" name="contact[email]" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" autocorrect="off" autocapitalize="off">
+                    <button type="submit" name="commit" class="btn-icon">{% render 'icon-dir-right' %}</button>
+                  {% endunless %}
+                {% endform %}
+              {%- else -%}
+                <form class="ds-flex flex-wrap position-relative" action="{{ settings.newsletter_form_action }}" method="post" target="_blank" name="mc-embedded-subscribe-form">
+                  <input type="email" placeholder="{{ block.settings.email_text }}" name="EMAIL" required/>
+                  <button type="submit" class="btn-icon">{% render 'icon-dir-right' %}</button>
+                </form>
+              {%- endif -%}
+
+              <p class="description">{{ block.settings.description | newline_to_br }}</p>
+            </div>
+          </div>
+  {%endcomment%}

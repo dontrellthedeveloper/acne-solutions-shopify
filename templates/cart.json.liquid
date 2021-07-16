@@ -1,0 +1,57 @@
+{%- layout none -%}
+
+{%- if cart.items != empty -%}
+  <span class="cart-count"><span class="cart-total">{{ cart.item_count }}</span> {{ 'layout.cart.items_count' | t: count: cart.item_count }} {{ 'cart.general.in_cart' | t }}</span>
+
+  <ul class="items-list ds-flex flex-column list-style-none">
+    {%- for item in cart.items -%}
+      <li class="cart-item ds-flex space-between position-relative">
+        <a href="{{ item.url }}" class="cart-item-image image-loading">
+          <img class="lazyload" data-src="{{ item | img_url: '100x' }}" alt="{{ item.title | escape }}" />
+        </a>
+        <div class="cart-item-details">
+          <p class="product-name">
+            <a href="{{item.url }}">
+              <span>{{ item.product.title }}</span>
+              {%- if item.product.variants.size > 1 -%}
+                <span class="variant_title"> - {{ item.variant.title }}</span>
+              {%- endif -%}
+            </a>
+          </p>
+          <p class="product-quantity">
+            {{- item.quantity -}} <span style="font-size: 1.2rem;"> x </span><span class="product-price"><span class="current-price money">{% render 'format_money' with item.price %}</span></span>
+          <p>
+        </div>
+        <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn-remove-cart" data-id="{{ item.variant_id }}" title="{{ 'cart.general.remove' | t }}" data-no-instant>{% render 'icon-close' %}</a>
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  <div class="cart-checkout ds-flex">
+    <div class="cart-info">
+      <div>
+        <span class="label">{{ 'cart.label.original_price' | t }} : </span>
+        <span class="product-price"><span class="money">{% render 'format_money' with cart.total_price %}</span></span>
+      </div>
+      <div>
+        <span class="label">{{ 'cart.label.discounted_price' | t }} : </span>
+        <span class="product-price"><span class="money">{% render 'format_money' with cart.total_discount %}</span></span>
+      </div>
+      <div>
+        <span class="label">{{ 'cart.label.total' | t }} : </span>
+        <span class="product-price"><span class="current-price money">{% render 'format_money' with cart.total_price %}</span></span>
+      </div>
+    </div><!-- .cart-info -->
+
+    <div class="ml-auto text-right">
+      <a href="/cart" class="btn btn-default" data-no-instant>
+        <span>{{ 'cart.general.view_cart' | t }}</span>
+      </a>
+      <a href="/checkout" class="btn btn-default">
+        <span>{{ 'cart.general.checkout' | t }}</span>
+      </a>
+    </div><!-- .text-center -->
+  </div><!-- .cart-checkout -->
+{%- else -%}
+  <span class="cart-count text-center">{{ 'cart.general.empty' | t }}</span>
+{%- endif -%}

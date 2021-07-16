@@ -1,0 +1,12 @@
+<div itemscope itemtype="http://schema.org/Product">
+{%- if settings.product_layout == 'grid' -%}
+  {% section 'template-product-grid' %}
+{%- else -%}
+  {% section 'template-product-default' %}
+{%- endif -%}
+
+{% section 'template-product-details-tabs' %}
+</div>
+
+{% section 'products-related' %}
+{% section 'product-recommendations' %}

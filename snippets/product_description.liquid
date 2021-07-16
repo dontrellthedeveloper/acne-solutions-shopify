@@ -1,0 +1,23 @@
+{% comment %}
+Renders product description. In quickview mode, truncate description to 30 words.
+  Accepts:
+    - description: <String> description text of product
+    - quickview: <Boolean> true if rendering quickview mode
+
+  Usage:
+    {% render 'product_description', description: product.description, quickview: false %}
+{% endcomment %}
+
+{%- liquid
+if description == blank
+  assign description = 'products.product.no_description' | t
+endif
+-%}
+
+<div class="product-description" itemprop="description">
+  {%- if quickview == true -%}
+    {{ description | strip_html | truncatewords: 30 }}
+  {%- else -%}
+    {{ description }}
+  {%- endif -%}
+</div>

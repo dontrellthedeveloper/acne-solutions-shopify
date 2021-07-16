@@ -1,0 +1,93 @@
+{% comment %}
+Renders product in a grid style
+  Accepts:
+    - a_c: <Boolean> Align menu center
+
+  Usage:
+    {% render 'header_menu', a_c: section.settings.header_menu_center %}
+{% endcomment %}
+<nav role="navigation" class="header-menu{% if a_c %} mr-auto{% endif %}">
+  <ul class="ds-flex list-style-none align-center flex-wrap{% if a_c %} justify-center{% endif %}">
+    {%- for link in linklists[section.settings.menu].links -%}
+      {%- if link.links != blank -%}
+        <li class="header-menu-item{% if link.child_current or link.current %} active{% endif %}">
+          <a href="{{ link.url }}" class="ds-flex align-center">
+            {% render 'header_menu_item', blocks: section.blocks, menu_title: link.title %}
+            <span class="right-expander ds-flex">{% render 'icon-dir-down' %}</span>
+          </a>
+
+          {%- assign styled_menu = false -%}
+          {%- for block in section.blocks -%}
+            {%- assign block_title = block.settings.menu_label | downcase -%}
+            {%- assign menu_title = link.title | downcase -%}
+
+            {%- if block.type == 'menu_style' and block_title == menu_title -%}
+              {%- if block.settings.dropdown_style != "dropdown-classic" -%}
+                {%- assign styled_menu = true -%}
+              {%- endif -%}
+              {%- assign current_block = block -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          <div class="sub-menu ds-flex flex-column{% if styled_menu == true %} dropdown-mega{% else %} dropdown-classic{% endif %}"{% if current_block %} {{ current_block.shopify_attributes }}{% endif %}>
+            {%- if styled_menu == true -%}
+              <div class="menu-top-img ds-flex">
+                {% for index in (1..5) %}
+                  {% capture top_img_index %}top_img{{ index }}{% endcapture %}
+                  {%- if current_block.settings[top_img_index] != blank -%}
+                    <div class="img-grid-item image-loading">
+                      <img class="lazyload" data-src="{{ current_block.settings[top_img_index] | img_url: 'master' }}" alt="Menu Top Banner" />
+                    </div>
+                  {%- endif -%}
+                {% endfor %}
+              </div><!-- .menu-top-img -->
+            {%- endif -%}
+
+            <ul class="child-menu list-style-none">
+              {% for childlink in link.links %}
+                {%- if childlink.links != blank -%}
+                  <li class="menu-item">
+                    <a href="{{ childlink.url }}" class="menu-list-header">
+                      {% render 'header_menu_item', blocks: section.blocks, menu_title: childlink.title %}{% render 'icon-dir-down' %}
+                    </a>
+                    <ul class="menu-grandchild list-style-none">
+                      {%- for grandchild in childlink.links -%}
+                        <li>
+                          <a href="{{ grandchild.url }}" class="menu-item-link">{% render 'header_menu_item', blocks: section.blocks, menu_title: grandchild.title %}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </li>
+                {%- else -%}
+                  <li class="menu-item">
+                    <a href="{{ childlink.url }}" class="menu-item-link">{% render 'header_menu_item', blocks: section.blocks, menu_title: childlink.title %}</a>
+                  </li>
+                {%- endif -%}
+              {% endfor %}
+            </ul>
+
+            {%- if styled_menu == true -%}
+              <div class="menu-bottom-img ds-flex">
+                {% for index in (1..4) %}
+                  {% capture bottom_img_index %}bottom_img{{index}}{% endcapture %}
+                  {%- if current_block.settings[bottom_img_index] != blank -%}
+                    <div class="img-grid-item image-loading">
+                      <img class="lazyload" data-src="{{ current_block.settings[bottom_img_index] | img_url: 'master' }}" alt="Menu Bottom Banner" />
+                    </div>
+                  {%- endif -%}
+                {% endfor %}
+              </div><!-- .menu-bottom-img -->
+            {%- endif -%}
+          </div><!-- .sub-menu -->
+        </li>
+
+      {%- else -%}
+        <li class="header-menu-item{% if link.current %} active{% endif %}">
+          <a href="{{ link.url }}" class="ds-flex align-center">{% render 'header_menu_item', blocks: section.blocks, menu_title: link.title %}</a>
+        </li>
+
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+</nav>

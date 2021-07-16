@@ -1,0 +1,225 @@
+{%- if section.settings.show -%}
+{%- assign title = section.settings.title -%}
+{%- assign description = section.settings.description -%}
+{%- assign section_style = section.settings.style -%}
+
+<div class="position-relative newsletter-css-mobile-p" style="margin:{{ section.settings.section_margin }};padding:{{ section.settings.section_padding }};background-color:{{ section.settings.color_section_bg }}; margin: 0;">
+  {%- if section_style == '1' -%}
+    {% render 'newsletter_form_style1', section: section %}
+  {%- else -%}
+    {% render 'newsletter_form_style2', section: section %}
+  {%- endif -%}
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show",
+      "label": "Show this section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "color",
+      "id": "color_section_bg",
+      "label": "Section background color",
+      "default": "#7bae23"
+    },
+    {
+      "type": "text",
+      "id": "section_margin",
+      "label": "Section Margin",
+      "info": "sequence: top-right-bottom-left (ex: 10px 0 10px 0)"
+    },
+    {
+      "type": "text",
+      "id": "section_padding",
+      "label": "Section Padding",
+      "info": "sequence: top-right-bottom-left (ex: 0 0 10px 0)",
+      "default": "25px 0 25px 0"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "1", "label": "Style 1" },
+        { "value": "2", "label": "Style 2" },
+        { "value": "3", "label": "Style 3" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "text",
+      "id": "section_width",
+      "label": "Section Width",
+      "info": "This setting only works for Style 3",
+      "default": "100%"
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Form Title",
+      "default": "Sign up for our newsletter"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "and enjoy <b>-15% off</b> your first purchase!"
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "color_title",
+      "label": "Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "c_title_bg",
+      "label": "Title background color",
+      "info": "This setting only works for Style 3",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "color_desc",
+      "label": "Description Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_input_bg",
+      "label": "Input box background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_input",
+      "label": "Input box text color",
+      "default": "#454648"
+    },
+    {
+      "type": "color",
+      "id": "color_btn_bg",
+      "label": "Button background color",
+      "default": "#669c07"
+    },
+    {
+      "type": "color",
+      "id": "color_btn",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "color_btn_hover",
+      "label": "Button hover background",
+      "default": "#b9d40b"
+    },
+    {
+      "type": "color",
+      "id": "c_form_bg",
+      "label": "Form background color",
+      "default": "#dddddd"
+    }
+  ],
+  "blocks": [
+		{
+      "type": "newsletter",
+      "name": "Newsletter Form",
+      "settings": [
+        {
+          "type": "text",
+          "id": "form_title",
+          "label": "Title",
+          "default": "Stay up to date"
+        },
+        {
+          "type": "text",
+          "id": "email_text",
+          "label": "Email Placeholder",
+          "default": "your@email.com*"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Venedor club members receive\n a <ins><i>15% discount<\/i><\/ins> redeemable against all orders. New friends get free shipping on your first order!"
+        }
+      ]
+    },
+    {
+      "type": "form",
+      "name": "Contact Form",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "map_img",
+          "label": "Location image",
+          "info": "270px*60px recommended"
+        },
+        {
+          "type": "text",
+          "id": "form_title",
+          "label": "Title",
+          "default": "QUICK CONTACT"
+        },
+        {
+          "type": "text",
+          "id": "email_text",
+          "label": "Email Placeholder",
+          "default": "Enter your e-mail*"
+        },
+        {
+          "type": "text",
+          "id": "review_text",
+          "label": "Review Placeholder",
+          "default": "Write your review*"
+        },
+        {
+          "type": "text",
+          "id": "submit_text",
+          "label": "Button Text",
+          "default": "Send"
+        },
+        {
+          "type": "text",
+          "id": "submit_text_icon",
+          "label": "Icon after text"
+        },
+        {
+          "type": "select",
+          "id": "btn_style",
+          "label": "Button style",
+          "options": [
+            {"value": "btn-default", "label": "Default button"},
+            {"value": "btn-text", "label": "Text link"}
+          ],
+          "default": "btn-default"
+        }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "Newsletter",
+    "category": "Newsletter"
+  }]
+}
+{% endschema %}

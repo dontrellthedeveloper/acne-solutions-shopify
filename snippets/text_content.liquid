@@ -1,0 +1,59 @@
+{% comment %}
+Renders image/video and text content of a slide show
+  Accepts:
+    - t_c: <Block> block of a text content
+
+  Usage:
+    {% render 'text_content', t_c: block %}
+{% endcomment %}
+
+<div class="text-content {{ t_c.settings.content_style }} {{ t_c.settings.content_vp }}">
+  <div class="{{ t_c.settings.content_hp }} position-relative">
+    {%- if t_c.settings.icon != blank -%}
+      <div class="text-content__icon" style="color:{{ t_c.settings.color_icon }}">
+        {% render 'render_icon', icon_name: t_c.settings.icon %}
+      </div>
+    {%- endif -%}
+
+    {%- if t_c.settings.sub_title != blank -%}
+      <h3 style="color:{{ t_c.settings.sub_color }}">{{ t_c.settings.sub_title | newline_to_br }}</h3>
+    {%- endif -%}
+
+    {%- if t_c.settings.content_style == 'text-beige3' -%}
+      <div class="position-relative">
+    {%- endif -%}
+    {%- if t_c.settings.title != blank -%}
+      <h2 style="color: {{ t_c.settings.color_title }};">{{ t_c.settings.title | newline_to_br }}</h2>
+    {%- endif -%}
+
+    {%- if t_c.settings.desc != blank -%}
+      <p style="color: {{ t_c.settings.color_desc }};">{{ t_c.settings.desc | newline_to_br }}</p>
+    {%- endif -%}
+
+    {%- if t_c.settings.content_style == 'text-beige3' -%}
+      </div>
+    {%- endif -%}
+
+    {%- if t_c.settings.btn_title != blank -%}
+      <a href="{{ t_c.settings.item_link | default: '#' }}" class="btn {{ t_c.settings.btn_style }}" style="color:{{ t_c.settings.color_button }}">
+        {{ t_c.settings.btn_title }}
+        {%- if t_c.settings.btn_title_icon != blank -%}
+          {% render 'render_icon', icon_name: t_c.settings.btn_title_icon %}
+        {%- endif -%}
+      </a>
+    {%- endif -%}
+
+    {%- if t_c.settings.btn_title2 != blank -%}
+      <a href="{{ t_c.settings.item_link2 | default: '#' }}" class="btn btn-second {{ t_c.settings.btn2_style }}" style="color:{{ t_c.settings.color_button2 }}">
+        {{ t_c.settings.btn_title2 }}
+        {%- if t_c.settings.btn_title_icon2 != blank -%}
+          {% render 'render_icon', icon_name: t_c.settings.btn_title_icon2 %}
+        {%- endif -%}
+      </a>
+    {%- endif -%}
+  </div><!-- .content_hp -->
+</div><!-- .text-content -->
+
+{%- if t_c.settings.item_link != blank and t_c.settings.btn_title == blank -%}
+  <a href="{{ t_c.settings.item_link }}" class="link-entire"></a>
+{%- endif -%}

@@ -1,0 +1,28 @@
+{% comment %}
+Renders product badges in product page
+  Accepts:
+    - blocks: <Object> blocks to show
+
+  Usage:
+    {% render 'product_badge', blocks: section.blocks %}
+{% endcomment %}
+{%- for block in blocks -%}
+  <div class="{{ style }}" {{ block.shopify_attributes }}>
+    {%- if block.type == 'icon_text' -%}
+      {% render 'promotion', promo_icon: block.settings.promo_icon, promo_title: block.settings.promo_title %}
+    {%- else -%}
+      <div class="promo-container">
+        {%- unless block.settings.badge_img == blank -%}
+          <div class="promo-image">
+            {% render 'image', m_img: block.settings.badge_img, element_type: 'png' %}
+          </div><!-- .promo-icon -->
+        {%- endunless -%}
+        <div class="promo-content">
+          {%- if block.settings.promo_title != blank -%}
+            <b class="promo-title">{{ block.settings.promo_title | newline_to_br }}</b>
+          {%- endif -%}
+        </div><!-- .promo-content -->
+      </div><!-- .promo-container -->
+    {%- endif -%}
+  </div><!-- style -->
+{%- endfor -%}

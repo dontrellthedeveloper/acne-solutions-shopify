@@ -1,0 +1,23 @@
+{% comment %}
+Renders search box form
+  Accepts:
+    - search_style: <String> Search form style (values: "search-box-fixed", search-box-popup", "search-line-popup")
+    - a_class: <String> Additional class name
+
+  Usage:
+    {% render 'search_form', search_style: section.settings.search_style, search_icon: section.settings.search_icon %}
+{% endcomment %}
+<form action="/search" method="get" role="search" class="header-search search-form {{ search_style }} {{ a_class }}" autocomplete="off">
+  <div class="search-input-container">
+    <input type="text" name="q" class="header-search__input" value="{{ search.terms | escape }}"
+      placeholder="{{ 'general.search.placeholder' | t }}">
+    {%- if settings.search_predictive -%}
+      <div class="result-container"></div>
+    {%- endif -%}
+  </div>
+
+
+  <button type="submit" class="search-button header-search__button">
+    {% render 'render_icon', icon_name: search_icon %}
+  </button>
+</form>
